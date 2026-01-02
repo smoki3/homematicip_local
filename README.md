@@ -86,9 +86,13 @@ To connect locally to your Homematic Home Control Unit (HmIP-HCU1), please use t
 - [Button Devices & Events](#button-devices--events)
 - [Troubleshooting Common Issues](#troubleshooting-common-issues)
 - [Technical Details](#technical-details)
+  - [Restore Last Brightness](#restore-last-brightness)
 - [Updating Device Firmware](#updating-device-firmware)
 - [OpenCCU Backup](#openccu-backup)
 - [Adding New Devices (Pairing)](#adding-new-devices-pairing)
+  - [Install Mode Control](#install-mode-control)
+  - [Install Mode Duration Sensors](#install-mode-duration-sensors)
+  - [Inbox Sensor](#inbox-sensor)
 - [CUxD, CCU-Jack & MQTT Support](#cuxd-ccu-jack--mqtt-support)
 - [Setting Up MQTT Support](#setting-up-mqtt-support)
 - [CUxD & CCU-Jack Device Compatibility](#cuxd--ccu-jack-device-compatibility)
@@ -1306,6 +1310,19 @@ data:
 
 See [detailed explanation](https://github.com/sukramj/aiohomematic/blob/devel/docs/rssi_fix.md) of how RSSI values are calculated and fixed.
 
+---
+
+### Restore Last Brightness
+
+Dimmers now save their last brightness setting and automatically restore it when turned on - even after a Home Assistant restart.
+
+**In practice this means:**
+- Set dimmer to 40% → turn off → turn on → dimmer is back at 40%
+- Works with all dimmers (HmIP-BDT, HmIP-PDT, etc.)
+- The setting survives Home Assistant restarts
+
+If you want a different brightness, simply specify it explicitly when turning on.
+
 ## Updating Device Firmware
 
 This integration provides **update entities** for each device, allowing you to manage firmware updates from Home Assistant.
@@ -1440,6 +1457,45 @@ automation:
 
 New devices are added to Home Assistant through a **controlled repair notification process**. This ensures devices get proper names and entity IDs from the start.
 
+### Install Mode Control
+
+Pairing new devices is easier with dedicated install mode controls directly in Home Assistant. The integration provides separate buttons for each interface:
+
+| Entity | Function |
+|--------|----------|
+| **Activate Install Mode HmIP-RF** | Start pairing mode for HomematicIP devices |
+| **Activate Install Mode BidCos-RF** | Start pairing mode for classic Homematic devices |
+
+### Install Mode Duration Sensors
+
+Two sensors show the remaining time while install mode is active:
+
+- **Install Mode HmIP-RF duration**: Countdown for HomematicIP pairing (in seconds)
+- **Install Mode BidCos-RF duration**: Countdown for BidCos pairing (in seconds)
+
+When the sensor shows 0, install mode has ended.
+
+**Example: Start pairing and notify when ready:**
+
+```yaml
+automation:
+  - alias: "Start HmIP Pairing"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: START_PAIRING
+    action:
+      - action: button.press
+        target:
+          entity_id: button.ccu_activate_install_mode_hmip_rf
+      - action: notify.mobile_app
+        data:
+          message: "Install mode active for 60 seconds. Pair your device now!"
+```
+
+---
+
 ### Why Repair Notifications?
 
 When you pair a new device with your CCU, it typically has a technical address like `VCU1234567`. If the integration created entities immediately, you'd get ugly entity IDs like `sensor.vcu1234567_temperature`.
@@ -1514,6 +1570,27 @@ HA:  Entities: climate.bedroom_thermostat, sensor.bedroom_thermostat_temperature
 | No room assigned | ❌ No area assigned |
 
 > **Note:** You can always change the area later in HA device settings.
+
+### Inbox Sensor
+
+A new **Inbox** sensor shows how many devices are waiting in the CCU inbox. This makes it easy to:
+- Monitor for newly paired devices
+- Create automations that notify you when devices are pending
+
+```yaml
+automation:
+  - alias: "Notify on New Inbox Device"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.ccu_inbox
+        above: 0
+    action:
+      - action: notify.mobile_app
+        data:
+          message: "New device in CCU inbox - check Repairs to add it"
+```
+
+---
 
 ### Troubleshooting New Devices
 
