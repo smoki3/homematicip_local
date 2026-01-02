@@ -2,6 +2,14 @@
 
 This release brings numerous improvements for daily use, from a redesigned setup experience to new control options for sirens and dimmers.
 
+> **☕ Support This Project**
+>
+> If you find this integration useful, consider supporting its development:
+>
+> [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-sponsor-pink.svg)](https://github.com/sponsors/sukramj)
+>
+> Your support helps maintain and improve this integration. Thank you! 🙏
+
 ---
 
 ## Easier Setup and Configuration
