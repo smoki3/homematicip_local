@@ -1,7 +1,5 @@
 # Homematic(IP) Local for OpenCCU
 
-> **⚠️ Development Branch:** This is the documentation for the development version. For the stable release documentation, see the [main branch README](https://github.com/sukramj/homematicip_local/blob/main/README.md).
-
 [![releasebadge]][release]
 [![License][license-shield]](LICENSE)
 [![hainstall][hainstallbadge]][hainstall]
@@ -15,8 +13,8 @@ Homematic(IP) Local for OpenCCU is a custom [integration](https://www.home-assis
 - Installation guide: https://github.com/sukramj/homematicip_local/wiki/Installation
 - Alternative installation by J. Maus (OpenCCU): https://github.com/OpenCCU/OpenCCU/wiki/HomeAssistant-Integration
 - Wiki (additional information): https://github.com/sukramj/aiohomematic/wiki
-- Changelog: https://github.com/sukramj/homematicip_local/blob/master/changelog.md
-- License: https://github.com/sukramj/homematicip_local/blob/master/LICENSE
+- Changelog: [changelog.md](changelog.md)
+- License: [LICENSE](LICENSE)
 
 Please support the community by adding more valuable information to the wiki.
 
@@ -33,7 +31,7 @@ To connect locally to your Homematic Home Control Unit (HmIP-HCU1), please use t
 - Installation: HACS recommended; manual installation supported.
 - Auto-discovery: Supported for CCU and compatible hubs.
 - Minimum requirements: Home Assistant 2025.10.0+; for Homematic IP on CCU require at least CCU2 2.53.27 / CCU3 3.53.26.
-- Useful links: [Installation guide](https://github.com/sukramj/homematicip_local/wiki/Installation), [Wiki](https://github.com/sukramj/aiohomematic/wiki), [Issues](https://github.com/sukramj/aiohomematic/issues), [Discussions](https://github.com/sukramj/aiohomematic/discussions), [Changelog](https://github.com/sukramj/homematicip_local/blob/master/changelog.md).
+- Useful links: [Installation guide](https://github.com/sukramj/homematicip_local/wiki/Installation), [Wiki](https://github.com/sukramj/aiohomematic/wiki), [Issues](https://github.com/sukramj/aiohomematic/issues), [Discussions](https://github.com/sukramj/aiohomematic/discussions), [Changelog](changelog.md).
 
 ## Table of contents
 - [Issues and discussions](#issues-and-discussions)
@@ -1053,14 +1051,14 @@ The `PRESS*` parameters are evaluated for this event type in the backend.
 ### `homematic.device_availability`
 
 This event type is used when a device is no longer available or is available again,
-and can be used with the blueprint [Support for persistent notifications for unavailable devices](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_persistent_notification.yaml).
+and can be used with the blueprint [Support for persistent notifications for unavailable devices](blueprints/automation/homematicip_local_persistent_notification.yaml).
 
 The `UNREACH` parameter is evaluated for this event type in the backend.
 
 ### `homematic.device_error`
 
 This event type is used when a device is in an error state.
-A sample usage is shown in the blueprint [Show device errors](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_show_device_error.yaml).
+A sample usage is shown in the blueprint [Show device errors](blueprints/automation/homematicip_local_show_device_error.yaml).
 
 The `ERROR*` parameters are evaluated for this event type in the backend.
 
@@ -2075,19 +2073,19 @@ BidCos-RF devices have an optional parameter for put_paramset which defines the 
 
 The following blueprints can be used to simplify the usage of Homematic and HomematicIP device:
 
-- [Support for 2-button Remotes](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local-actions-for-2-button.yaml): Support for two button remote like HmIP-WRC2.
-- [Support for 4-button Key Ring Remote Control](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local-actions-for-key_ring_remote_control.yaml): Support for four button remote like HmIP-KRCA.
-- [Support for 6-button Remotes](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local-actions-for-6-button.yaml): Support for six button remote like HmIP-WRC6.
-- [Support for 8-button Remotes](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local-actions-for-8-button.yaml): Support for eight button remote like HmIP-RC8.
-- [Support for persistent notifications for unavailable devices](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_persistent_notification.yaml): Enable persistent notifications about unavailable devices.
-- [Reactivate device by model](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_reactivate_device_by_model.yaml). Reactivate unavailable devices by device model.
-- [Reactivate every device](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_reactivate_device_full.yaml). Reactivate all unavailable devices. NOT recommended. Usage of `by device type` or `single device` should be preferred.
-- [Reactivate single device](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_reactivate_single_device.yaml) Reactivate a single unavailable device.
-- [Show device errors](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/automation/homematicip_local_show_device_error.yaml) Show all error events emitted by a device. This is an unfiltered blueprint. More filters should be added to the trigger.
+- [Support for 2-button Remotes](blueprints/automation/homematicip_local-actions-for-2-button.yaml): Support for two button remote like HmIP-WRC2.
+- [Support for 4-button Key Ring Remote Control](blueprints/automation/homematicip_local-actions-for-key_ring_remote_control.yaml): Support for four button remote like HmIP-KRCA.
+- [Support for 6-button Remotes](blueprints/automation/homematicip_local-actions-for-6-button.yaml): Support for six button remote like HmIP-WRC6.
+- [Support for 8-button Remotes](blueprints/automation/homematicip_local-actions-for-8-button.yaml): Support for eight button remote like HmIP-RC8.
+- [Support for persistent notifications for unavailable devices](blueprints/automation/homematicip_local_persistent_notification.yaml): Enable persistent notifications about unavailable devices.
+- [Reactivate device by model](blueprints/automation/homematicip_local_reactivate_device_by_model.yaml). Reactivate unavailable devices by device model.
+- [Reactivate every device](blueprints/automation/homematicip_local_reactivate_device_full.yaml). Reactivate all unavailable devices. NOT recommended. Usage of `by device type` or `single device` should be preferred.
+- [Reactivate single device](blueprints/automation/homematicip_local_reactivate_single_device.yaml) Reactivate a single unavailable device.
+- [Show device errors](blueprints/automation/homematicip_local_show_device_error.yaml) Show all error events emitted by a device. This is an unfiltered blueprint. More filters should be added to the trigger.
 
 Feel free to contribute:
 
-- [Community blueprints](https://github.com/sukramj/homematicip_local/blob/devel/blueprints/community)
+- [Community blueprints](blueprints/community)
 
 I use these blueprints on my own system and share them with you, but I don't want to invest in blueprints for devices that I don't own!
 Feel free to copy, improve, or enhance these blueprints and adapt them to other devices, and if you like, create a PR with a new blueprint.
@@ -2120,4 +2118,4 @@ Just copy these files to "your ha-config_dir"/blueprints/automation
 
 ## License
 
-This project is licensed under the MIT License. See LICENSE for details: https://github.com/sukramj/homematicip_local/blob/master/LICENSE
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
