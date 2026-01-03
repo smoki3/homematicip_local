@@ -2,13 +2,23 @@
 
 ## What's Changed
 
+### New Features
+
+- **Light Last Brightness Option**: Added config option `Restore last brightness for lights` in advanced settings. When enabled, lights will turn on with the last non-zero brightness level instead of default 100%. Default is disabled.
+
+### Improvements
+
+- **Configuration Options**: Improved labels and descriptions for all advanced configuration options in config flow and options flow
+- **Documentation**: Updated README.md with corrected descriptions for Device Behavior and Expert Options sections
+
 ### Bug Fixes
 
+- **Sensor State Class**: Added unit-based fallback rules for %, bar, °C, and g/m³ units. This restores long-term statistics support for Homebrew devices like HB-UNI sensors
 - **Device Model Matching**: Fixed case-insensitive device model matching for entity description rules. Older devices like HmIP-SWDO (reported as `HMIP-SWDO` by CCU) now correctly receive their device_class (e.g., `window`)
 - **Service Schema**: Removed invalid `base_temperature` parameter from `set_schedule_simple_profile` service schema (parameter is part of `simple_profile_data`, not a separate field)
 - **Service Name**: Fixed incorrect service name `create_backup` → `create_ccu_backup` in release notes
 
-## Bump aiohomematic to [2026.1.7](https://github.com/SukramJ/aiohomematic/compare/2026.1.5...2026.1.7)
+## Bump aiohomematic to [2026.1.8](https://github.com/SukramJ/aiohomematic/compare/2026.1.5...2026.1.8)
 
 ### Bug Fixes
 
