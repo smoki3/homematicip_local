@@ -66,7 +66,7 @@
                     "username": "CCU Benutzername"
                 }, 
                 "data_description": {
-                    "instance_name": "Name der HA-Instanz.\n Wenn von mehreren HA-Installationen aus eine Verbindung mit derselben CCU-Instanz herstellt werden soll, muss dieser Instanzname auf jeder HA-Instanz eindeutig sein", 
+                    "instance_name": "Eindeutiger Bezeichner für diese Home Assistant Installation. Ermöglicht mehreren Home Assistant Instanzen den gleichzeitigen Zugriff auf dieselbe CCU. Hat keine Beziehung zum CCU-Hostnamen/IP. Nach der Einrichtung nicht ändern — Entitäten würden neu erstellt.", 
                     "password": "Groß-/Kleinschreibung beachten. Erlaubte Zeichen: A-Z, a-z, 0-9 und .!$():;#-", 
                     "username": "Groß-/Kleinschreibung beachten. Benutzer muss die Administratorrolle haben"
                 }, 

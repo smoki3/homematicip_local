@@ -66,7 +66,7 @@
                     "username": "CCU username"
                 }, 
                 "data_description": {
-                    "instance_name": "Name of the HA instance.\n If you want to connect to the same CCU instance from multiple HA installations this instance_name must be unique on every HA instance", 
+                    "instance_name": "Unique identifier for this Home Assistant installation. Allows multiple Home Assistant instances to connect to the same CCU simultaneously. Has no relation to the CCU hostname/IP. Do not change after setup — entities would be recreated.", 
                     "password": "Case sensitive. Allowed characters: A-Z, a-z, 0-9 and .!$():;#-", 
                     "username": "Case sensitive. User must have administrator role"
                 }, 

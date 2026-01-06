@@ -239,6 +239,16 @@ Enter your CCU credentials. The integration will automatically detect your backe
 | **Username** | Admin username on your CCU | `Admin` | **Case sensitive!** User must have administrator privileges. |
 | **Password** | Password for the admin user | `MySecurePass123` | **Case sensitive!** Only use allowed characters: `A-Z`, `a-z`, `0-9`, and `.!$():;#-` |
 
+> **⚠️ Important: About the Instance Name**
+>
+> The **Instance Name** serves as a unique identifier for your Home Assistant installation when communicating with the CCU. It allows multiple Home Assistant instances to connect to the same CCU simultaneously without interfering with each other.
+>
+> - The instance name has **no relation to the CCU's hostname or IP address**
+> - You **can change** the CCU's hostname or IP address at any time
+> - You **must not change** the instance name after initial setup — doing so will cause all entities to be recreated (losing history, automations, and dashboards)
+>
+> Choose a meaningful name once and keep it.
+
 > **Tip:** After clicking "Submit", the integration automatically detects your CCU type and available interfaces. You'll see a brief progress indicator during detection.
 
 ---
