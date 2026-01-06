@@ -24,6 +24,11 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+          # Extract base version (remove beta suffix like 'b1', 'b2', etc.)
+          # 2.0.5b2 -> 2.0.5, 2.0.5 -> 2.0.5
+          BASE_VERSION="${VERSION%%b*}"
+          echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
+
           # Check if this is a stable release (no 'b' in version)
           if [[ "$VERSION" != *"b"* ]]; then
             echo "is_stable=true" >> $GITHUB_OUTPUT
@@ -34,7 +39,8 @@ jobs:
       - name: Extract changelog section
         id: changelog
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
+          # Use base version to find changelog entry (2.0.5b2 uses changelog for 2.0.5)
+          VERSION="${{ steps.version.outputs.base_version }}"
 
           # Extract the section for this version from changelog.md
           # Matches from "# Version [X.Y.Z]" to the next "# Version [" or end of file
