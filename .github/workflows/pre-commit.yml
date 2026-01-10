@@ -16,6 +16,7 @@ permissions:
   contents: read
 jobs:
   pre-commit:
+    if: github.repository_owner == 'SukramJ'
     name: Run pre-commit hooks
     runs-on: ubuntu-latest
     steps:

@@ -3,7 +3,7 @@ name: Lock
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: "0 11 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 permissions:
   issues: write
@@ -16,7 +16,7 @@ jobs:
       - uses: dessant/lock-threads@v6.0.0
         with:
           github-token: ${{ github.token }}
-          issue-inactive-days: "7"
+          issue-inactive-days: "0.1"
           issue-lock-reason: ""
-          pr-inactive-days: "3"
+          pr-inactive-days: "0.1"
           pr-lock-reason: ""
