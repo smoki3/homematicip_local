@@ -1,9 +1,16 @@
-# Version [2.1.2](https://github.com/SukramJ/homematicip_local/compare/2.1.1...2.1.2) (2026-01-10)
+# Version [2.1.2](https://github.com/SukramJ/homematicip_local/compare/2.1.1...2.1.2) (2026-01-14)
 
 ## What's Changed
 
+### New Features
+
+- **New Services for Configuration Reload**: Added two new admin services to reload device and channel configurations from the CCU without restarting Home Assistant:
+  - `reload_device_config`: Reloads device configuration (accepts device_id or device_address)
+  - `reload_channel_config`: Reloads channel configuration (accepts device_id or device_address + channel number)
+
 ### Bug Fixes
 
+- **Fix Backend Detection Hanging with Non-Standard Ports**: Fixed issue where backend detection would hang indefinitely when using non-standard HTTP/HTTPS ports (e.g., port 2080 instead of 80). Added 20-second timeout wrapper with graceful degradation - if detection times out or fails, the config flow now proceeds directly to manual interface configuration instead of blocking. Users can also skip backend detection entirely via new checkbox in the connection step (useful when non-standard ports are known upfront). Resolves [#2804](https://github.com/SukramJ/aiohomematic/issues/2804).
 - **Fix Translation Error on Duplicate CCU Configuration**: Fixed "The intl string context variable 'serial' was not provided" error when attempting to add a CCU instance that is already configured. The abort message now correctly displays the serial number.
 - **Fix Unwanted Integration Reload on Action Select Change**: Action select values (e.g., siren tones, light patterns) are now stored in a separate storage file instead of the config entry. Previously, changing an action select value triggered `async_update_entry()` which caused a full integration reload via the `update_listener`. This fix eliminates unnecessary restarts when selecting different tones or patterns. Existing values are automatically migrated from config entry to the new storage file.
 - **Fix Options Flow Not Persisting Changes**: Configuration changes made in the Options Flow (e.g., enabling SysVar scan) were lost after Home Assistant restart. The issue was caused by a shallow copy of config entry data that shared nested dictionary references with the original. Home Assistant's change detection saw no difference and skipped saving. Now uses `deepcopy` to ensure complete independence.
@@ -17,9 +24,18 @@
 - **Default Entity Descriptions for Update Entities**: Added default descriptions with `UpdateDeviceClass.FIRMWARE` for `UPDATE` and `HUB_UPDATE` data point categories.
 - **Interface Connectivity Binary Sensors**: Added entity description rule with `BinarySensorDeviceClass.CONNECTIVITY` for the new hub-level interface connectivity sensors.
 
-## Bump aiohomematic to [2026.1.37](https://github.com/SukramJ/aiohomematic/compare/2026.1.27...2026.1.37)
+## Bump aiohomematic to [2026.1.38](https://github.com/SukramJ/aiohomematic/compare/2026.1.27...2026.1.38)
 
-### Bug Fixes
+### New Features
+
+- **Configurable Backend Detection Timeouts**: Backend detection timeouts are now managed centrally through `TimeoutConfig` instead of hardcoded constants. Two new configurable fields:
+  - `backend_detection_request: float = 5.0` — Timeout for individual XML-RPC/JSON-RPC requests
+  - `backend_detection_total: float = 15.0` — Total timeout for complete detection process
+- **Socket-Level Timeout for XML-RPC Connections**: Added `timeout` parameter to XML-RPC connections to prevent indefinite hangs when connecting to unreachable hosts. Default socket timeout of 5s during detection, while normal RPC operations maintain backward compatibility.
+- **Smart Early Abort on Fatal Connection Errors**: Backend detection now distinguishes fatal errors (ETIMEDOUT, EHOSTUNREACH, ENETUNREACH) from transient errors (ECONNREFUSED). Fatal errors trigger immediate abort, reducing detection time on unreachable hosts from ~30s to ~5s (6× improvement).
+- **Service Methods for Manual Configuration Reload**: New `Device.reload_device_config()` and `Channel.reload_channel_config()` methods enable external cache updates for scenarios where CONFIG_PENDING events are unreliable (particularly for classic BidCos devices).
+
+### Bug Fixes (from 2026.1.37)
 
 - **Fix Schedule Validation Error on Device Initialization**: Fixed `ValidationException: Time 360 is invalid` error occurring when heating group devices (VirtualDevices interface) are initialized. The `identify_base_temperature()` function incorrectly assumed all endtime values in the schedule cache are formatted strings ("06:00"), but during initial cache loading they can be raw integers (360 minutes) directly from the CCU. The function now handles both integer and string formats by checking the type before conversion. This fixes climate entity creation failures and recurring errors on Home Assistant startup.
 - **Fix Type Safety for ScheduleSlot**: Updated `ScheduleSlot` TypedDict to correctly declare `endtime: str | int` instead of `endtime: str`. This reflects the actual behavior where the CCU always returns integers (minutes since midnight) while internal conversion may use string format.

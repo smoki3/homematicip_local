@@ -58,6 +58,7 @@ CONF_VERIFY_TLS: Final = "verify_tls"
 # New constants for simplified config flow (v12)
 CONF_CUSTOM_PORTS: Final = "custom_ports"  # Dict of custom interface ports
 CONF_CUSTOM_PORT_CONFIG: Final = "custom_port_config"  # Checkbox for custom port configuration
+CONF_SKIP_BACKEND_DETECTION: Final = "skip_backend_detection"  # Checkbox to skip backend detection
 
 EVENT_ADDRESS = "address"
 EVENT_CHANNEL_NO = "channel_no"
@@ -107,6 +108,8 @@ class HmipLocalServices(StrEnum):
     PUT_LINK_PARAMSET = "put_link_paramset"
     PUT_PARAMSET = "put_paramset"
     RECORD_SESSION = "record_session"
+    RELOAD_CHANNEL_CONFIG = "reload_channel_config"
+    RELOAD_DEVICE_CONFIG = "reload_device_config"
     REMOVE_CENTRAL_LINKS = "remove_central_links"
     REMOVE_LINK = "remove_link"
     SEND_TEXT_DISPLAY = "send_text_display"

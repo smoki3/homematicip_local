@@ -63,11 +63,13 @@
                     "host": "CCU hostname/IP address", 
                     "instance_name": "Integration instance name", 
                     "password": "CCU password", 
+                    "skip_backend_detection": "Skip automatic backend detection", 
                     "username": "CCU username"
                 }, 
                 "data_description": {
                     "instance_name": "Unique identifier for this Home Assistant installation. Allows multiple Home Assistant instances to connect to the same CCU simultaneously. Has no relation to the CCU hostname/IP. Do not change after setup — entities would be recreated.", 
                     "password": "Case sensitive. Allowed characters: A-Z, a-z, 0-9 and .!$():;#-", 
+                    "skip_backend_detection": "Enable this option if you use non-standard ports or if backend detection hangs. You will manually configure interfaces and ports in the next step.", 
                     "username": "Case sensitive. User must have administrator role"
                 }, 
                 "description": "Step {step_current} of {step_total}: Configure CCU connection", 
@@ -1543,6 +1545,38 @@
                 }
             }, 
             "name": "Record session"
+        }, 
+        "reload_channel_config": {
+            "description": "Reload channel configuration from the CCU", 
+            "fields": {
+                "channel": {
+                    "description": "Channel number to reload", 
+                    "name": "Channel"
+                }, 
+                "device_address": {
+                    "description": "Enter a device address", 
+                    "name": "Device address"
+                }, 
+                "device_id": {
+                    "description": "Select a device", 
+                    "name": "Device"
+                }
+            }, 
+            "name": "Reload channel configuration"
+        }, 
+        "reload_device_config": {
+            "description": "Reload device configuration from the CCU", 
+            "fields": {
+                "device_address": {
+                    "description": "Enter a device address", 
+                    "name": "Device address"
+                }, 
+                "device_id": {
+                    "description": "Select a device", 
+                    "name": "Device"
+                }
+            }, 
+            "name": "Reload device configuration"
         }, 
         "remove_central_links": {
             "description": "Remove links to the central to disable support key press events", 
