@@ -969,6 +969,19 @@ Available automatic select entities:
 
 The selected values are automatically used when calling siren services or using the siren entity.
 
+### `homematicip_local.set_sound_led`
+
+Set LED color and brightness on HmIP-MP3P sound player devices. This service targets the light entity of the sound player.
+
+| Field | Required | Description |
+| ----- | -------- | ----------- |
+| `color` | No | LED color: `black`, `blue`, `green`, `turquoise`, `red`, `purple`, `yellow`, `white` |
+| `brightness` | No | LED brightness (0 to 255) |
+| `on_time` | No | LED on duration in seconds |
+| `ramp_time` | No | Ramp time in seconds for brightness fade |
+| `repetitions` | No | Number of repetitions (0=none, 1-18=count, -1=infinite) |
+| `flash_time` | No | Flash duration in milliseconds (0 to 5000) |
+
 ### `homematicip_local.light_set_on_time`
 
 Set on time for a light entity. Must be followed by a `light.turn_on`.
