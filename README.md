@@ -969,6 +969,22 @@ Available automatic select entities:
 
 The selected values are automatically used when calling siren services or using the siren entity.
 
+### `homematicip_local.play_sound`
+
+Play a sound on HmIP-MP3P sound player devices. This service targets the siren entity of the sound player.
+
+| Field | Required | Description |
+| ----- | -------- | ----------- |
+| `soundfile` | No | Sound file to play (e.g., `SOUNDFILE_001`, `SOUNDFILE_002`, or `INTERNAL_SOUNDFILE`) |
+| `volume` | No | Playback volume (0.0 to 1.0) |
+| `on_time` | No | Playback duration in seconds |
+| `ramp_time` | No | Ramp time in seconds for volume fade |
+| `repetitions` | No | Number of repetitions (0=none, 1-18=count, -1=infinite) |
+
+### `homematicip_local.stop_sound`
+
+Stop sound playback on HmIP-MP3P sound player devices. This service targets the siren entity of the sound player.
+
 ### `homematicip_local.set_sound_led`
 
 Set LED color and brightness on HmIP-MP3P sound player devices. This service targets the light entity of the sound player.
