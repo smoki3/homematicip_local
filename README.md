@@ -694,6 +694,10 @@ Creates a direct connection.
 
 Clears the cache for a central unit from Home Assistant. Requires a restart.
 
+### `homematicip_local.create_ccu_backup`
+
+Create and download a system backup from the CCU. Only available for OpenCCU (formerly RaspberryMatic). The backup file is saved to `<HA_storage>/homematicip_local/backup/`. For more details and automation examples, see [OpenCCU Backup](#openccu-backup).
+
 ### `homematicip_local.confirm_all_delayed_devices`
 
 Confirms all delayed devices (devices in the CCU inbox) at once and adds them to Home Assistant. This is useful when multiple new devices need to be added without going through the repair flow for each one individually. The devices will be added without setting a custom name.
@@ -770,6 +774,14 @@ This action will only override the availability status of a device and all its d
 
 This is not a solution for communication problems with Homematic devices.
 Use this only to reactivate devices with flaky communication to gain control again.
+
+### `homematicip_local.reload_device_config`
+
+Reload device configuration from the CCU. This refreshes the device's paramset descriptions and values from the backend. Useful after making configuration changes directly on the CCU.
+
+### `homematicip_local.reload_channel_config`
+
+Reload configuration for a specific channel from the CCU. Similar to `reload_device_config` but limited to a single channel. Useful when you only need to refresh a specific channel's configuration.
 
 ### `homematicip_local.get_device_value`
 
@@ -998,6 +1010,23 @@ Set LED color and brightness on HmIP-MP3P sound player devices. This service tar
 | `repetitions` | No | Number of repetitions (0=none, 1-18=count, -1=infinite) |
 | `flash_time` | No | Flash duration in milliseconds (0 to 5000) |
 
+### `homematicip_local.send_text_display`
+
+Send text to a text display entity. This allows you to display custom messages on HmIP devices with text display capabilities.
+
+| Field | Required | Description |
+| ----- | -------- | ----------- |
+| `entity_id` | Yes | Entity ID of the text display entity |
+| `text` | Yes | Text to display on the device |
+
+### `homematicip_local.clear_text_display`
+
+Clear text on a text display entity. Removes any currently displayed text from HmIP devices with text display capabilities.
+
+| Field | Required | Description |
+| ----- | -------- | ----------- |
+| `entity_id` | Yes | Entity ID of the text display entity |
+
 ### `homematicip_local.light_set_on_time`
 
 Set on time for a light entity. Must be followed by a `light.turn_on`.
@@ -1006,6 +1035,11 @@ Use 0 to reset the on time.
 ### `homematicip_local.switch_set_on_time`
 
 Set on time for a switch entity. Must be followed by a `switch.turn_on`.
+Use 0 to reset the on time.
+
+### `homematicip_local.valve_set_on_time`
+
+Set on time for a valve entity. Must be followed by a `valve.open`.
 Use 0 to reset the on time.
 
 ### `homeassistant.update_entity`
