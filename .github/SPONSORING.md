@@ -8,3 +8,8 @@
 
 ---
 
+> **☕ Featuring: Schedule Editor Card for Homematic(IP) Thermostats**
+> 
+>  A Lovelace card for viewing and editing thermostat schedules is available at https://github.com/SukramJ/homematicip_local_climate_schedule_card.
+
+---
