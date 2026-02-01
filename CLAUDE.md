@@ -25,7 +25,7 @@ This document provides comprehensive guidance for AI assistants working with the
 
 **Project Name:** Homematic(IP) Local for OpenCCU
 **Type:** Home Assistant Custom Integration
-**Version:** 2.0.0
+**Version:** 2.2.4
 **Primary Language:** Python 3.13+
 **Domain:** `homematicip_local`
 
@@ -117,7 +117,7 @@ homematicip_local/
 
 ### Runtime Dependencies
 
-- **aiohomematic** (v2025.12.41) - Core async library for Homematic device communication
+- **aiohomematic** (v2026.2.0) - Core async library for Homematic device communication
 - **Home Assistant Core** - Minimum version: 2025.10.0+
 - **Python 3.13+** (target version for development)
 
@@ -128,7 +128,7 @@ homematicip_local/
 - **pylint** (4.0.4) - Code linting
 - **ruff** (0.14.9) - Fast Python linter and formatter
 - **prek** (0.2.28) - Git hooks manager (Rust-based pre-commit alternative)
-- **aiohomematic-test-support** (2025.12.41) - Mock test data
+- **aiohomematic-test-support** (2026.2.0) - Mock test data
 - **async-upnp-client** (0.46.1) - UPnP discovery
 - **uv** - Fast Python package installer (preferred over pip)
 
@@ -891,7 +891,7 @@ t6u7v8w Use deepcopy for config entry data modification
 
 **What NOT to include**:
 ```
-x9y0z1a Bump aiohomematic to 2025.12.42  ❌ (dependency update, documented in aiohomematic)
+x9y0z1a Bump aiohomematic to 2026.2.1  ❌ (dependency update, documented in aiohomematic)
 b2c3d4e Update manifest.json requirements  ❌ (maintenance task)
 f5g6h7i Run prek hooks  ❌ (development process, not user-facing)
 ```
@@ -1169,10 +1169,10 @@ python script/check_translations.py
 
 ### Version Information
 
-- **Current Version:** 2.0.0
+- **Current Version:** 2.2.4
 - **Minimum HA Version:** 2025.10.0+
 - **Python Target:** 3.13+ (CI tests on 3.13, 3.14)
-- **aiohomematic Version:** 2025.12.41
+- **aiohomematic Version:** 2026.2.0
 
 ### External Resources
 
@@ -1185,5 +1185,5 @@ python script/check_translations.py
 
 ---
 
-**Last Updated**: 2025-12-22
-**Version**: 2.0.0
+**Last Updated**: 2026-02-01
+**Version**: 2.2.4
