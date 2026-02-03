@@ -1212,7 +1212,21 @@
                 }
             }, 
             "name": "Copy schedule profile"
-        }, 
+        },
+        "cover_get_schedule": {
+            "name": "Get cover schedule",
+            "description": "Return the week schedule for a cover."
+        },
+        "cover_set_schedule": {
+            "name": "Set cover schedule",
+            "description": "Set the week schedule for a cover.",
+            "fields": {
+                "schedule_data": {
+                    "name": "Schedule data",
+                    "description": "The schedule data dictionary. Structure: {group_no: {field: value, ...}, ...}. See aiohomematic documentation for DefaultWeekProfile format."
+                }
+            }
+        },
         "create_ccu_backup": {
             "description": "Create and download a system backup from the CCU. Saves the backup file to the configured backup directory.", 
             "fields": {
@@ -1415,16 +1429,6 @@
             }, 
             "name": "Get paramset"
         }, 
-        "get_schedule_profile": {
-            "description": "[DEPRECATED - will be removed April 2026] Use 'get_schedule_simple_profile' instead. Call to get a schedule of a climate device",
-            "fields": {
-                "profile": {
-                    "description": "Select a profile",
-                    "name": "Profile"
-                }
-            },
-            "name": "[Deprecated] Get schedule profile"
-        },
         "get_schedule_simple_profile": {
             "description": "Call to get a schedule of a climate device in simplified format",
             "fields": {
@@ -1449,20 +1453,6 @@
             },
             "name": "Get simple schedule profile weekday"
         },
-        "get_schedule_weekday": {
-            "description": "[DEPRECATED - will be removed April 2026] Use 'get_schedule_simple_weekday' instead. Call to get a schedule of a climate device",
-            "fields": {
-                "profile": {
-                    "description": "Select a profile",
-                    "name": "Profile"
-                },
-                "weekday": {
-                    "description": "Select a weekday",
-                    "name": "Weekday"
-                }
-            },
-            "name": "[Deprecated] Get schedule profile weekday"
-        },
         "get_variable_value": {
             "description": "Read a value of a variable", 
             "fields": {
@@ -1486,7 +1476,21 @@
                 }
             }, 
             "name": "Set light on time"
-        }, 
+        },
+        "light_get_schedule": {
+            "name": "Get light schedule",
+            "description": "Return the week schedule for a light."
+        },
+        "light_set_schedule": {
+            "name": "Set light schedule",
+            "description": "Set the week schedule for a light.",
+            "fields": {
+                "schedule_data": {
+                    "name": "Schedule data",
+                    "description": "The schedule data dictionary. Structure: {group_no: {field: value, ...}, ...}. See aiohomematic documentation for DefaultWeekProfile format."
+                }
+            }
+        },
         "play_sound": {
             "description": "Play a sound on HmIP-MP3P sound player devices", 
             "fields": {
@@ -1708,7 +1712,7 @@
                 }
             }, 
             "name": "Set device value"
-        }, 
+        },
         "set_schedule_active_profile": {
             "description": "Set the active schedule profile on a climate device", 
             "fields": {
@@ -1718,20 +1722,6 @@
                 }
             }, 
             "name": "Set active schedule profile"
-        }, 
-        "set_schedule_profile": {
-            "description": "[DEPRECATED - will be removed April 2026] Use 'set_schedule_simple_profile' instead. Call to store a schedule on a climate device",
-            "fields": {
-                "profile": {
-                    "description": "Select a profile",
-                    "name": "Profile"
-                },
-                "profile_data": {
-                    "description": "Data for a profile",
-                    "name": "Profile data"
-                }
-            },
-            "name": "[Deprecated] Set schedule profile"
         }, 
         "set_schedule_simple_profile": {
             "description": "Call to store a schedule on a climate device",
@@ -1748,45 +1738,27 @@
             "name": "Set simple schedule profile"
         }, 
         "set_schedule_simple_weekday": {
-            "description": "Call to store a schedule on a climate device", 
+            "description": "Call to store a schedule on a climate device",
             "fields": {
                 "base_temperature": {
-                    "description": "Select a base temperature", 
+                    "description": "Select a base temperature",
                     "name": "Base temperature"
-                }, 
-                "profile": {
-                    "description": "Select a profile", 
-                    "name": "Profile"
-                }, 
-                "simple_weekday_list": {
-                    "description": "Data for a weekday profile", 
-                    "name": "Weekday profile data"
-                }, 
-                "weekday": {
-                    "description": "Select a weekday", 
-                    "name": "Weekday"
-                }
-            }, 
-            "name": "Set simple schedule profile weekday"
-        }, 
-        "set_schedule_weekday": {
-            "description": "[DEPRECATED - will be removed April 2026] Use 'set_schedule_simple_weekday' instead. Call to store a schedule on a climate device",
-            "fields": {
+                },
                 "profile": {
                     "description": "Select a profile",
                     "name": "Profile"
                 },
+                "simple_weekday_list": {
+                    "description": "Data for a weekday profile",
+                    "name": "Weekday profile data"
+                },
                 "weekday": {
                     "description": "Select a weekday",
                     "name": "Weekday"
-                },
-                "weekday_data": {
-                    "description": "Data for a weekday profile",
-                    "name": "Weekday profile data"
                 }
             },
-            "name": "[Deprecated] Set schedule profile weekday"
-        }, 
+            "name": "Set simple schedule profile weekday"
+        },
         "set_sound_led": {
             "description": "Set LED color and brightness on HmIP-MP3P sound player devices", 
             "fields": {
@@ -1848,7 +1820,21 @@
                 }
             }, 
             "name": "Set switch on time"
-        }, 
+        },
+        "switch_get_schedule": {
+            "name": "Get switch schedule",
+            "description": "Return the week schedule for a switch."
+        },
+        "switch_set_schedule": {
+            "name": "Set switch schedule",
+            "description": "Set the week schedule for a switch.",
+            "fields": {
+                "schedule_data": {
+                    "name": "Schedule data",
+                    "description": "The schedule data dictionary. Structure: {group_no: {field: value, ...}, ...}. See aiohomematic documentation for DefaultWeekProfile format."
+                }
+            }
+        },
         "turn_on_siren": {
             "description": "Turn siren on", 
             "fields": {
@@ -1886,6 +1872,20 @@
                 }
             }, 
             "name": "Set valve on time"
+        },
+        "valve_get_schedule": {
+            "name": "Get valve schedule",
+            "description": "Return the week schedule for a valve."
+        },
+        "valve_set_schedule": {
+            "name": "Set valve schedule",
+            "description": "Set the week schedule for a valve.",
+            "fields": {
+                "schedule_data": {
+                    "name": "Schedule data",
+                    "description": "The schedule data dictionary. Structure: {group_no: {field: value, ...}, ...}. See aiohomematic documentation for DefaultWeekProfile format."
+                }
+            }
         }
     }
 }

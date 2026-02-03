@@ -1213,6 +1213,20 @@
             }, 
             "name": "Zeitplan-Profil kopieren"
         }, 
+        "cover_get_schedule": {
+            "description": "Gibt den Wochenzeitplan für einen Rollladen zurück.", 
+            "name": "Rollladen-Zeitplan abrufen"
+        }, 
+        "cover_set_schedule": {
+            "description": "Setzt den Wochenzeitplan für einen Rollladen.", 
+            "fields": {
+                "schedule_data": {
+                    "description": "Das Zeitplan-Daten-Dictionary. Struktur: {group_no: {field: value, ...}, ...}. Siehe aiohomematic Dokumentation für DefaultWeekProfile Format.", 
+                    "name": "Zeitplandaten"
+                }
+            }, 
+            "name": "Rollladen-Zeitplan setzen"
+        }, 
         "create_ccu_backup": {
             "description": "Erstellt und lädt ein System-Backup von der CCU herunter. Speichert die Backup-Datei im konfigurierten Backup-Verzeichnis.", 
             "fields": {
@@ -1383,16 +1397,6 @@
             }, 
             "name": "Parametersatz von einem Gerät oder Kanal lesen"
         }, 
-        "get_schedule_profile": {
-            "description": "[VERALTET - wird im April 2026 entfernt] Verwende 'get_schedule_simple_profile' stattdessen. Lädt ein Zeitplan-Profil von einer Zeitplan-Entität", 
-            "fields": {
-                "profile": {
-                    "description": "Wählen Sie ein Profil zum Laden", 
-                    "name": "Profil"
-                }
-            }, 
-            "name": "[Veraltet] Zeitplan-Profil abrufen"
-        }, 
         "get_schedule_simple_profile": {
             "description": "Lädt ein Zeitplan-Profil von einer Zeitplan-Entität im vereinfachten Format", 
             "fields": {
@@ -1417,20 +1421,6 @@
             }, 
             "name": "Einfaches Zeitplan-Profil Wochentag abrufen"
         }, 
-        "get_schedule_weekday": {
-            "description": "[VERALTET - wird im April 2026 entfernt] Verwende 'get_schedule_simple_weekday' stattdessen. Lädt einen Wochentag eines Zeitplan-Profils", 
-            "fields": {
-                "profile": {
-                    "description": "Wählen Sie ein Profil", 
-                    "name": "Profil"
-                }, 
-                "weekday": {
-                    "description": "Wählen Sie einen Wochentag", 
-                    "name": "Wochentag"
-                }
-            }, 
-            "name": "[Veraltet] Zeitplan-Profil Wochentag abrufen"
-        }, 
         "get_variable_value": {
             "description": "Wert einer Homematic Systemvariable lesen", 
             "fields": {
@@ -1445,6 +1435,10 @@
             }, 
             "name": "Wert eines Systemvariable lesen"
         }, 
+        "light_get_schedule": {
+            "description": "Gibt den Wochenzeitplan für ein Licht zurück.", 
+            "name": "Licht-Zeitplan abrufen"
+        }, 
         "light_set_on_time": {
             "description": "Stellt die Einschaltdauer für ein Licht ein. Muss von einem light.turn_on gefolgt werden", 
             "fields": {
@@ -1454,6 +1448,16 @@
                 }
             }, 
             "name": "Stellt die Einschaltdauer eines Lichts ein"
+        }, 
+        "light_set_schedule": {
+            "description": "Setzt den Wochenzeitplan für ein Licht.", 
+            "fields": {
+                "schedule_data": {
+                    "description": "Das Zeitplan-Daten-Dictionary. Struktur: {group_no: {field: value, ...}, ...}. Siehe aiohomematic Dokumentation für DefaultWeekProfile Format.", 
+                    "name": "Zeitplandaten"
+                }
+            }, 
+            "name": "Licht-Zeitplan setzen"
         }, 
         "play_sound": {
             "description": "Spielt einen Sound auf HmIP-MP3P Signalgebern ab", 
@@ -1719,20 +1723,6 @@
             }, 
             "name": "Aktives Zeitplan-Profil setzen"
         }, 
-        "set_schedule_profile": {
-            "description": "[VERALTET - wird April 2026 entfernt] Bitte 'set_schedule_simple_profile' verwenden. Setzt ein Zeitplan-Profil auf einer Zeitplan-Entität", 
-            "fields": {
-                "profile": {
-                    "description": "Wählen Sie ein Profil", 
-                    "name": "Profil"
-                }, 
-                "profile_data": {
-                    "description": "Profil-Daten für alle Wochentage", 
-                    "name": "Profil-Daten"
-                }
-            }, 
-            "name": "[Veraltet] Zeitplan-Profil setzen"
-        }, 
         "set_schedule_simple_profile": {
             "description": "Speichert einen Zeitplan auf einem Thermostat", 
             "fields": {
@@ -1768,24 +1758,6 @@
                 }
             }, 
             "name": "Einfachen Wochentag speichern"
-        }, 
-        "set_schedule_weekday": {
-            "description": "[VERALTET - wird April 2026 entfernt] Bitte 'set_schedule_simple_weekday' verwenden. Setzt einen Wochentag eines Zeitplan-Profils", 
-            "fields": {
-                "profile": {
-                    "description": "Wählen Sie ein Profil", 
-                    "name": "Profil"
-                }, 
-                "weekday": {
-                    "description": "Wählen Sie einen Wochentag", 
-                    "name": "Wochentag"
-                }, 
-                "weekday_data": {
-                    "description": "Zeitplan-Daten für den Wochentag", 
-                    "name": "Wochentag-Daten"
-                }
-            }, 
-            "name": "[Veraltet] Zeitplan-Profil Wochentag setzen"
         }, 
         "set_sound_led": {
             "description": "Setzt LED-Farbe und Helligkeit auf HmIP-MP3P Signalgebern", 
@@ -1839,6 +1811,10 @@
             "description": "Stoppt die Soundwiedergabe auf HmIP-MP3P Signalgebern", 
             "name": "Sound stoppen"
         }, 
+        "switch_get_schedule": {
+            "description": "Gibt den Wochenzeitplan für einen Schalter zurück.", 
+            "name": "Schalter-Zeitplan abrufen"
+        }, 
         "switch_set_on_time": {
             "description": "Stellt die Einschaltdauer eines Schalters ein. Muss von einem switch.turn_on gefolgt werden", 
             "fields": {
@@ -1848,6 +1824,16 @@
                 }
             }, 
             "name": "Stellt die Einschaltdauer eines Schalters ein"
+        }, 
+        "switch_set_schedule": {
+            "description": "Setzt den Wochenzeitplan für einen Schalter.", 
+            "fields": {
+                "schedule_data": {
+                    "description": "Das Zeitplan-Daten-Dictionary. Struktur: {group_no: {field: value, ...}, ...}. Siehe aiohomematic Dokumentation für DefaultWeekProfile Format.", 
+                    "name": "Zeitplandaten"
+                }
+            }, 
+            "name": "Schalter-Zeitplan setzen"
         }, 
         "turn_on_siren": {
             "description": "Schaltet die Sirene ein", 
@@ -1877,6 +1863,10 @@
             }, 
             "name": "Aktualisiert die Firmware-Daten des Geräts"
         }, 
+        "valve_get_schedule": {
+            "description": "Gibt den Wochenzeitplan für ein Ventil zurück.", 
+            "name": "Ventil-Zeitplan abrufen"
+        }, 
         "valve_set_on_time": {
             "description": "Stellt die Einschaltdauer eines Ventils ein. Muss von einem valve.open gefolgt werden", 
             "fields": {
@@ -1886,6 +1876,16 @@
                 }
             }, 
             "name": "Stellt die Einschaltdauer eines Ventils ein"
+        }, 
+        "valve_set_schedule": {
+            "description": "Setzt den Wochenzeitplan für ein Ventil.", 
+            "fields": {
+                "schedule_data": {
+                    "description": "Das Zeitplan-Daten-Dictionary. Struktur: {group_no: {field: value, ...}, ...}. Siehe aiohomematic Dokumentation für DefaultWeekProfile Format.", 
+                    "name": "Zeitplandaten"
+                }
+            }, 
+            "name": "Ventil-Zeitplan setzen"
         }
     }
 }
