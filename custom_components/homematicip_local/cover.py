@@ -16,13 +16,13 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 from homeassistant.const import STATE_CLOSED, STATE_UNAVAILABLE, STATE_UNKNOWN
-from homeassistant.core import HomeAssistant, ServiceResponse, callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HomematicConfigEntry
 from .control_unit import ControlUnit, signal_new_data_point
-from .generic_entity import AioHomematicGenericRestoreEntity
+from .generic_entity import AioHomematicGenericEntity, AioHomematicGenericRestoreEntity
 from .support import handle_homematic_errors
 
 ATTR_CHANNEL_POSITION: Final = "channel_position"
@@ -102,6 +102,10 @@ async def async_setup_entry(
 class AioHomematicBaseCover(AioHomematicGenericRestoreEntity[HmGenericCover], CoverEntity):
     """Representation of the HomematicIP cover entity."""
 
+    __no_recored_attributes = AioHomematicGenericEntity.NO_RECORDED_ATTRIBUTES
+    __no_recored_attributes.update({ATTR_CHANNEL_POSITION, ATTR_CHANNEL_TILT_POSITION})
+    _unrecorded_attributes = frozenset(__no_recored_attributes)
+
     @property
     @override
     def current_cover_position(self) -> int | None:
@@ -161,11 +165,6 @@ class AioHomematicBaseCover(AioHomematicGenericRestoreEntity[HmGenericCover], Co
         """Close the cover."""
         await self._data_point.close()
 
-    @handle_homematic_errors
-    async def async_get_schedule(self) -> ServiceResponse:
-        """Return the week schedule for the cover."""
-        return await super().async_get_schedule()
-
     @override
     @handle_homematic_errors
     async def async_open_cover(self, **kwargs: Any) -> None:
@@ -189,11 +188,6 @@ class AioHomematicBaseCover(AioHomematicGenericRestoreEntity[HmGenericCover], Co
         if ATTR_POSITION in kwargs:
             position = int(kwargs[ATTR_POSITION])
             await self._data_point.set_position(position=position)
-
-    @handle_homematic_errors
-    async def async_set_schedule(self, schedule_data: dict[str, Any]) -> None:
-        """Set the week schedule for the cover."""
-        await super().async_set_schedule(schedule_data=schedule_data)
 
     @override
     @handle_homematic_errors

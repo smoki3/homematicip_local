@@ -5,9 +5,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from datetime import datetime, timedelta
 import logging
-from typing import Any, Final, cast, override
+from typing import Any, Final, override
 
-from aiohomematic.const import DataPointCategory, ScheduleProfile, WeekdayStr
+from aiohomematic.const import DataPointCategory
+from aiohomematic.interfaces import ClimateWeekProfileDataPointProtocol
 from aiohomematic.model.custom import (
     PROFILE_PREFIX,
     BaseCustomDpClimate,
@@ -16,7 +17,6 @@ from aiohomematic.model.custom import (
     ClimateProfile,
     CustomDpIpThermostat,
 )
-from aiohomematic.model.schedule_models import ClimateProfileSchedule, ClimateSchedulePeriod, ClimateWeekdaySchedule
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     ATTR_CURRENT_HUMIDITY,
@@ -32,21 +32,24 @@ from homeassistant.components.climate.const import (
     HVACMode,
 )
 from homeassistant.const import ATTR_TEMPERATURE, STATE_UNAVAILABLE, STATE_UNKNOWN, UnitOfTemperature
-from homeassistant.core import HomeAssistant, ServiceResponse, callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HomematicConfigEntry
+from .const import CLIMATE_SCHEDULE_API_VERSION
 from .control_unit import ControlUnit, signal_new_data_point
 from .generic_entity import ATTR_SCHEDULE_DATA, AioHomematicGenericEntity, AioHomematicGenericRestoreEntity
 from .support import handle_homematic_errors
 
 _LOGGER = logging.getLogger(__name__)
 
-ATTR_OPTIMUM_START_STOP: Final = "optimum_start_stop"
-ATTR_TEMPERATURE_OFFSET: Final = "temperature_offset"
-ATTR_ACTIVE_PROFILE: Final = "active_profile"
+ATTR_CURRENT_SCHEDULE_PROFILE: Final = "current_schedule_profile"
+ATTR_DEVICE_ACTIVE_PROFILE_INDEX: Final = "device_active_profile_index"
 ATTR_AVAILABLE_PROFILES: Final = "available_profiles"
+ATTR_OPTIMUM_START_STOP: Final = "optimum_start_stop"
+ATTR_SCHEDULE_API_VERSION: Final = "schedule_api_version"
+ATTR_TEMPERATURE_OFFSET: Final = "temperature_offset"
 
 SUPPORTED_HA_PRESET_MODES: Final = [
     PRESET_AWAY,
@@ -112,7 +115,9 @@ class AioHomematicClimate(AioHomematicGenericRestoreEntity[BaseCustomDpClimate],
     _attr_translation_key = "hmip_climate"
     _enable_turn_on_off_backwards_compatibility: bool = False
     __no_recored_attributes = AioHomematicGenericEntity.NO_RECORDED_ATTRIBUTES
-    __no_recored_attributes.update({ATTR_AVAILABLE_PROFILES, ATTR_OPTIMUM_START_STOP, ATTR_TEMPERATURE_OFFSET})
+    __no_recored_attributes.update(
+        {ATTR_AVAILABLE_PROFILES, ATTR_DEVICE_ACTIVE_PROFILE_INDEX, ATTR_OPTIMUM_START_STOP, ATTR_TEMPERATURE_OFFSET}
+    )
     _unrecorded_attributes = frozenset(__no_recored_attributes)
 
     def __init__(
@@ -127,8 +132,11 @@ class AioHomematicClimate(AioHomematicGenericRestoreEntity[BaseCustomDpClimate],
         )
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_target_temperature_step = data_point.target_temperature_step
-        # Schedule attributes (only for entities that support schedules)
-        self._current_profile: ScheduleProfile = ScheduleProfile.P1
+        self._week_profile_data_point: ClimateWeekProfileDataPointProtocol | None = None
+        if (wp_dp := self._data_point.device.week_profile_data_point) is not None and isinstance(
+            wp_dp, ClimateWeekProfileDataPointProtocol
+        ):
+            self._week_profile_data_point = wp_dp
 
     @property
     @override
@@ -167,12 +175,12 @@ class AioHomematicClimate(AioHomematicGenericRestoreEntity[BaseCustomDpClimate],
             attributes[ATTR_OPTIMUM_START_STOP] = optimum_start_stop
 
         # Add schedule attributes if this entity supports schedules
-        if self._data_point.has_schedule:
-            attributes[ATTR_ACTIVE_PROFILE] = self._current_profile.value
-            attributes[ATTR_AVAILABLE_PROFILES] = [
-                profile.value for profile in self._data_point.available_schedule_profiles
-            ]
-            if schedule_data := self._data_point.schedule.get(self._current_profile):
+        if (wp_dp := self._week_profile_data_point) is not None:
+            attributes[ATTR_AVAILABLE_PROFILES] = [profile.value for profile in wp_dp.available_profiles]
+            attributes[ATTR_CURRENT_SCHEDULE_PROFILE] = wp_dp.current_schedule_profile
+            attributes[ATTR_DEVICE_ACTIVE_PROFILE_INDEX] = wp_dp.device_active_profile_index
+            attributes[ATTR_SCHEDULE_API_VERSION] = CLIMATE_SCHEDULE_API_VERSION
+            if schedule_data := wp_dp.current_profile_schedule:
                 attributes[ATTR_SCHEDULE_DATA] = schedule_data
 
         return attributes
@@ -276,34 +284,6 @@ class AioHomematicClimate(AioHomematicGenericRestoreEntity[BaseCustomDpClimate],
         return None
 
     @handle_homematic_errors
-    async def async_copy_schedule(self, source_entity_id: str) -> None:
-        """Copy a schedule from this entity to another."""
-        if source_climate_data_point := cast(
-            BaseCustomDpClimate,
-            self._data_point.device.data_point_provider.get_data_point_by_custom_id(custom_id=source_entity_id),
-        ):
-            await source_climate_data_point.copy_schedule(target_climate_data_point=self._data_point)
-
-    @handle_homematic_errors
-    async def async_copy_schedule_profile(
-        self, source_profile: ScheduleProfile, target_profile: ScheduleProfile, source_entity_id: str | None = None
-    ) -> None:
-        """Copy a schedule profile."""
-        if source_entity_id and (
-            source_climate_data_point := cast(
-                BaseCustomDpClimate,
-                self._data_point.device.data_point_provider.get_data_point_by_custom_id(custom_id=source_entity_id),
-            )
-        ):
-            await source_climate_data_point.copy_schedule_profile(
-                source_profile=source_profile,
-                target_profile=target_profile,
-                target_climate_data_point=self._data_point,
-            )
-        else:
-            await self._data_point.copy_schedule_profile(source_profile=source_profile, target_profile=target_profile)
-
-    @handle_homematic_errors
     async def async_disable_away_mode(self) -> None:
         """Disable the away mode on thermostat."""
         await self._data_point.disable_away_mode()
@@ -323,30 +303,6 @@ class AioHomematicClimate(AioHomematicGenericRestoreEntity[BaseCustomDpClimate],
     async def async_enable_away_mode_by_duration(self, hours: int, away_temperature: float) -> None:
         """Enable the away mode by duration on thermostat."""
         await self._data_point.enable_away_mode_by_duration(hours=hours, away_temperature=away_temperature)
-
-    @handle_homematic_errors
-    async def async_get_schedule_profile(self, profile: ScheduleProfile) -> ServiceResponse:
-        """Get a schedule profile."""
-        return cast(ServiceResponse, await self._data_point.get_schedule_profile(profile=profile, force_load=True))
-
-    @handle_homematic_errors
-    async def async_get_schedule_weekday(self, profile: ScheduleProfile, weekday: WeekdayStr) -> ServiceResponse:
-        """Get a schedule profile weekday."""
-        return cast(
-            ServiceResponse,
-            await self._data_point.get_schedule_weekday(profile=profile, weekday=weekday, force_load=True),
-        )
-
-    async def async_set_active_profile(self, profile: str | ScheduleProfile) -> None:
-        """Set the active profile."""
-        schedule_profile = profile if isinstance(profile, ScheduleProfile) else ScheduleProfile(profile)
-        self._current_profile = schedule_profile
-        self.async_write_ha_state()
-        _LOGGER.debug(
-            "Set active profile %s for %s",
-            schedule_profile.value,
-            self._data_point.custom_id,
-        )
 
     @override
     @handle_homematic_errors
@@ -369,35 +325,6 @@ class AioHomematicClimate(AioHomematicGenericRestoreEntity[BaseCustomDpClimate],
             )
             return
         await self._data_point.set_profile(profile=ClimateProfile(preset_mode))
-
-    @handle_homematic_errors
-    async def async_set_schedule_profile(
-        self, profile: ScheduleProfile, simple_profile_data: ClimateProfileSchedule
-    ) -> None:
-        """Set the schedule profile."""
-        await self._data_point.set_schedule_profile(
-            profile=profile,
-            profile_data=simple_profile_data.model_dump(),
-        )
-
-    @handle_homematic_errors
-    async def async_set_schedule_weekday(
-        self,
-        profile: ScheduleProfile,
-        weekday: WeekdayStr,
-        base_temperature: float,
-        simple_weekday_list: list[ClimateSchedulePeriod],
-    ) -> None:
-        """Set the schedule profile weekday."""
-        weekday_data = ClimateWeekdaySchedule(
-            base_temperature=base_temperature,
-            periods=simple_weekday_list,
-        )
-        await self._data_point.set_schedule_weekday(
-            profile=profile,
-            weekday=weekday,
-            weekday_data=weekday_data.model_dump(),
-        )
 
     @override
     @handle_homematic_errors

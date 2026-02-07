@@ -1,8 +1,28 @@
-# Version [2.3.0](https://github.com/SukramJ/homematicip_local/compare/2.2.4...2.3.0) (2026-02-05)
+# Version [2.3.0](https://github.com/SukramJ/homematicip_local/compare/2.2.4...2.3.0) (2026-02-06)
 
 ## What's Changed
 
+### Breaking Changes (Schedule Services)
+
+- All schedule services have been migrated from **entity-based** to **device-based**. Services now use `device_id` or `device_address` instead of targeting entities. **Existing automations using old service names must be updated.**
+
+- **Renamed services:**
+  - `get_schedule_simple_profile` → `get_schedule_profile`
+  - `get_schedule_simple_schedule` → `get_schedule`
+  - `get_schedule_simple_weekday` → `get_schedule_weekday`
+  - `set_simple_schedule` → `set_schedule`
+  - `set_simple_schedule_profile` → `set_schedule_profile`
+  - `set_simple_schedule_weekday` → `set_schedule_weekday`
+  - `set_schedule_active_profile` → `set_current_schedule_profile`
+
+- **Renamed entity attributes (Climate & Week Profile Sensor):**
+  - `active_profile` → `current_schedule_profile`
+
 ### Added
+
+- **Week profile sensor entity**: New `AioHomematicWeekProfileSensor` entity for every device with schedule support. Exposes schedule metadata (schedule type, max entries, schedule data) as state attributes. Climate devices additionally expose temperature bounds and available profiles (P1-P6).
+
+- **Device-based schedule services**: All schedule services now use `device_id` or `device_address` for device identification. This replaces the previous domain-specific (entity-based) approach with a unified API that works for all device types.
 
 - **Command throttle interval config option**: Added `command_throttle_interval` to Advanced Options (config flow and options flow). Controls the minimum delay between consecutive device commands per RF interface to ensure smooth operation and prevent packet loss during bulk operations. Default: `0.1`s. Set to `0.0` to disable.
 
@@ -10,41 +30,33 @@
 
 - **Command throttle diagnostics**: Added per-interface command throttle statistics to the diagnostics export, including interval, queue size, throttled/critical/burst counts, and burst detection thresholds.
 
-- **Domain-specific schedule services**: Replaced generic `set_schedule`/`get_schedule` with domain-specific services for better validation and IDE support:
-
-  | Domain | Set Schedule | Get Schedule |
-  |--------|--------------|--------------|
-  | switch | `switch_set_schedule` | `switch_get_schedule` |
-  | light | `light_set_schedule` | `light_get_schedule` |
-  | cover | `cover_set_schedule` | `cover_get_schedule` |
-  | valve | `valve_set_schedule` | `valve_get_schedule` |
-
-- **Domain-specific Voluptuous schemas**: Added comprehensive input validation at service call level:
-  - **Switch**: Level must be binary (0.0 or 1.0), no `ramp_time`, no `level_2`
-  - **Light**: Supports `ramp_time` for smooth dimming, no `level_2`
-  - **Cover**: Supports `level_2` for slat position, no `duration`/`ramp_time`
-  - **Valve**: Supports `duration`, no `level_2`/`ramp_time`
-
 - **Improved error handling**: Extended `handle_homematic_errors` decorator to catch `ValueError` and `pydantic.ValidationError`, converting them to user-friendly `HomeAssistantError` messages
+
+- **`device_active_profile_index` attribute**: Climate and week profile sensor entities now expose the 1-based profile index as reported by the device hardware. This value is automatically synced from the device's `ACTIVE_PROFILE` (IP) or `WEEK_PROGRAM_POINTER` (RF) parameter.
+
+- **`current_schedule_profile` attribute**: Climate and week profile sensor entities expose the currently selected schedule profile (P1–P6). Automatically synchronized with the device's active profile parameter.
+
+- **Climate entity subscribes to week profile changes**: The climate entity now subscribes to `device.week_profile_data_point` updates, ensuring schedule attributes (`schedule_data`, `current_schedule_profile`, `available_profiles`) update in real-time when the schedule changes on the device.
+
+- **Database recording optimization**: Added `_unrecorded_attributes` to light, cover, switch, valve, siren, and week profile sensor entities. Static metadata attributes (e.g. available colors, channel positions, available soundfiles, schedule metadata) are now excluded from the HA recorder database, reducing storage usage.
 
 ### Changed
 
 - **Config entry migration v16**: Existing config entries are migrated to include `command_throttle_interval` with the default value
 
-### Removed (Deprecated Services)
+**Migration example:**
 
-The following deprecated climate services have been removed earlier than the announced April 2026 date. Due to the complexity of maintaining both old and new schedule APIs alongside the aiohomematic Pydantic model migration, these services were removed now:
-
-- **get_schedule_profile** → Use `get_schedule_simple_profile` instead
-- **get_schedule_weekday** → Use `get_schedule_simple_weekday` instead
-- **set_schedule_profile** → Use `set_schedule_simple_profile` instead
-- **set_schedule_weekday** → Use `set_schedule_simple_weekday` instead
-
-The "simple" services remain fully backward compatible and continue to work as before.
-
-## Bump aiohomematic to [2026.2.5](https://github.com/SukramJ/aiohomematic/compare/2026.2.0...2026.2.5)
+## Bump aiohomematic to [2026.2.6](https://github.com/SukramJ/aiohomematic/compare/2026.2.0...2026.2.6)
 
 ### New Features (aiohomematic)
+
+- **WeekProfileDataPoint** (2026.2.6): Device-level data points that serve as the central interface for schedule data — both for climate and non-climate devices. One data point per device exposes schedule metadata, target channel mappings, and delegates read/write operations to the underlying WeekProfile. Schedule access has been removed from custom data points (`BaseCustomDpClimate`, `CustomDataPoint`) and is now exclusively available via `device.week_profile_data_point`.
+
+- **Automatic profile sync from device** (2026.2.6): `ClimateWeekProfileDataPoint` now binds the device's `ACTIVE_PROFILE` (IP) or `WEEK_PROGRAM_POINTER` (RF) generic data point. `current_schedule_profile` updates automatically when the thermostat switches profiles.
+
+- **Climate CDP notification on schedule change** (2026.2.6): When schedule data changes (e.g., after `CONFIG_PENDING=False` reload), the linked Climate CDP is automatically notified via an internal subscription, causing the HA Climate Entity to update.
+
+- **`device_active_profile_index` property** (2026.2.6): Returns the 1-based profile index from the device parameter (`int | None`). RF values are normalised from 0-based to 1-based.
 
 - **Optimistic updates** (2026.2.4): Data points immediately update their state when `send_value()` is called, then rollback if the CCU rejects the value or times out. Fires `OptimisticRollbackEvent` on rollback. Configurable via `TimeoutConfig.optimistic_update_timeout` (default: 30s).
 
@@ -59,7 +71,7 @@ The "simple" services remain fully backward compatible and continue to work as b
 
 - **Domain-specific schedule validation** (2026.2.3): Added validation for schedule data based on device category (SWITCH, LIGHT, COVER, VALVE). The validation enforces that only appropriate fields are used for each device type. Backward-compatible: validation is only applied when domain context is provided.
 
-- **Schedule Pydantic Models**: New validated Pydantic models for automatic validation with clear error messages:
+- **Schedule Pydantic Models** (2026.2.1): New validated Pydantic models for automatic validation with clear error messages:
 
   **Climate devices:**
   - `ClimateSchedulePeriod`: Validates temperature periods with starttime, endtime, temperature
@@ -73,49 +85,27 @@ The "simple" services remain fully backward compatible and continue to work as b
 
 ### Bug Fixes (aiohomematic)
 
-- **Optimistic mismatch false positives** (2026.2.5): Fixed false `OPTIMISTIC_MISMATCH` warnings when the CCU rounds float values (e.g., optimistic `0.3803…` vs CCU-confirmed `0.38`). Float values are now rounded to 2 decimal places before comparison.
-- **Optimistic burst false rollbacks** (2026.2.5): Fixed false `OptimisticRollbackEvent` and logbook entries during rapid command bursts (e.g., dimming a light through multiple values). Intermediate CCU confirmations are now silently accepted; mismatch is only evaluated on the final confirmation when all pending sends have been acknowledged.
-- **Optimistic mismatch no longer fires rollback events** (2026.2.5): `VALUE_MISMATCH` no longer publishes `OptimisticRollbackEvent`. When the CCU confirms a different value (e.g., clamping to minimum dimming level), the CCU value is silently accepted as authoritative. Rollback events are now only published for actual rollbacks (`TIMEOUT`, `SEND_ERROR`).
+- **CallbackDataPoint ownership reset on unsubscribe** (2026.2.6): When the owning `custom_id` fully unsubscribes from a data point, `_custom_id` is now reset to `None`. This allows re-registration with a different `custom_id` (e.g. after an entity_id rename in Home Assistant), preventing `AioHomematicException` on resubscription.
 - **i18n format specs** (2026.2.5): Fixed `i18n.tr()` silently dropping format specifiers like `{interval:.3f}`. Placeholders with format specs now render correctly in log messages.
-- **Optimistic updates in collector path** (2026.2.4): Fixed optimistic values interfering with `is_state_change()` checks in parent service methods. Optimistic values are now deferred until `send_data()` when using `CallParameterCollector`.
-- **Cover target levels** (2026.2.4): Fixed `_target_level` and `_target_tilt_level` properties to check for `None` before calling `float()`, preventing type errors.
 - **JSON control character sanitization** (2026.2.2): Fixed `JSONDecodeError` when ReGa scripts return JSON containing unescaped control characters in device names or values. The sanitization is now selective - it only escapes control characters within JSON string values, preserving structural whitespace.
-- **CustomDataPoint schedule conversion** (2026.2.2): Fixed `get_schedule()` and `set_schedule()` methods to correctly convert between `ScheduleDict` and `SimpleSchedule` Pydantic model.
 - **LINK Paramset Validation** (2026.2.1): Fixed `put_paramset` with `check_against_pd=True` for LINK paramsets. Validation is now automatically skipped for LINK calls to prevent "Parameter not found" errors.
 - **Schedule Pydantic Models JSON Serialization** (2026.2.1): Added `_JsonSerializableMixin` to all schedule Pydantic models to support orjson/Home Assistant JSON serialization.
-- **ClimateWeekProfile Type Signature** (2026.2.1): Fixed incorrect type annotation in `convert_dict_to_raw_schedule()`.
 
 ### Breaking Changes (aiohomematic)
 
-- **Climate Schedule API Unified to Pydantic Models** (2026.2.1): The old dual-format API (TypedDict + Pydantic) has been removed. All schedule methods now use Pydantic models exclusively.
+- **Schedule access moved to WeekProfileDataPoint** (2026.2.6): All schedule methods and properties removed from `BaseCustomDpClimate` and `CustomDataPoint`. Schedule operations are now exclusively available via `device.week_profile_data_point`.
 
-  **Renamed methods in `BaseCustomDpClimate`:**
-  - `simple_schedule` → `schedule`
-  - `get_schedule_simple_profile()` → removed (use `get_schedule_profile()`)
-  - `get_schedule_simple_schedule()` → `get_schedule()`
-  - `get_schedule_simple_weekday()` → `get_schedule_weekday()`
-  - `set_simple_schedule()` → `set_schedule()`
-  - `set_simple_schedule_profile()` → `set_schedule_profile()`
-  - `set_simple_schedule_weekday()` → `set_schedule_weekday()`
+- **Climate profile property renames** (2026.2.6): On `ClimateWeekProfileDataPointProtocol`, `active_profile` → `current_schedule_profile`, `active_schedule` → `current_profile_schedule`, `set_active_profile()` → `set_current_schedule_profile()`. This avoids a naming conflict with the device parameter `ACTIVE_PROFILE`. `copy_schedule` and `copy_schedule_profile` parameter renamed from `target_climate_data_point` to `target_data_point`.
+
+- **HA-Addon renamed to HA-App** (2026.2.6): `SystemInformation.is_ha_addon` renamed to `is_ha_app`.
+
+- **Climate Schedule API Unified to Pydantic Models** (2026.2.1): The old dual-format API (TypedDict + Pydantic) has been removed. All schedule methods now use Pydantic models exclusively.
 
 ### Changed (aiohomematic)
 
-- **ClimateWeekProfile**: Simple schedule format now uses Pydantic models for automatic validation. The existing user-facing format remains unchanged (no breaking changes), but input validation is now more robust with clear error messages.
+- **DelegatedProperty expansion** (2026.2.6): Replaced 56 boilerplate `@property` methods with `DelegatedProperty` descriptors across 23 files. Reduces repetitive delegation code while preserving runtime behavior.
+- **ClimateWeekProfile**: Simple schedule format now uses Pydantic models for automatic validation. The existing user-facing format remains unchanged, but input validation is now more robust with clear error messages.
 - **DefaultWeekProfile**: Refactored schedule cache to use human-readable Pydantic models (`SimpleSchedule`, `SimpleScheduleEntry`) instead of complex dictionary format.
-
-### Validation Improvements (aiohomematic)
-
-Climate schedule validation now checks:
-- Time format (HH:MM, supports 24:00 for end-of-day)
-- Required fields (starttime, endtime, temperature)
-- Time sequence (start < end)
-- No overlapping periods
-- Valid weekdays (MONDAY-SUNDAY)
-- Valid profiles (P1-P6)
-
-### Documentation (aiohomematic)
-
-- **Week profile**: Added comprehensive documentation for `SimpleScheduleEntry` fields including device-type-specific meanings, condition types, and field summary table
 
 # Version [2.2.4](https://github.com/SukramJ/homematicip_local/compare/2.2.3...2.2.4) (2026-02-01)
 
