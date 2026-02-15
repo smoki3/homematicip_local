@@ -1,4 +1,4 @@
-# Version [2.3.0](https://github.com/SukramJ/homematicip_local/compare/2.2.4...2.3.0) (2026-02-09)
+# Version [2.3.0](https://github.com/SukramJ/homematicip_local/compare/2.2.4...2.3.0) (2026-02-15)
 
 ## What's Changed
 
@@ -52,9 +52,11 @@
 
 ### Changed
 
+- **Entity names from backend translations**: Removed redundant local entity translations (binary_sensor, button, lock, number, select, sensor, switch, valve) from strings.json and translation files. Entity names are now provided by the backend CCU translation system via `translated_name`. Only climate (preset modes) and event (keypress types) translations remain local.
+
 - **Config entry migration v16**: Existing config entries are migrated to include `command_throttle_interval` with the default value
 
-## Bump aiohomematic to [2026.2.13](https://github.com/SukramJ/aiohomematic/compare/2026.2.0...2026.2.13)
+## Bump aiohomematic to [2026.2.15](https://github.com/SukramJ/aiohomematic/compare/2026.2.0...2026.2.15)
 
 ### Architecture (aiohomematic)
 
@@ -119,8 +121,11 @@
 
 - **Extraction script improvements** (2026.2.13): Added PNAME.txt and easymode TCL file parsing, improved HTML entity decoding. Parameters: 841 → 1029 (+188), parameter values: 1256 → 1326 (+70). Removed 17 redundant custom translation entries now covered by improved extraction.
 
+- **Empty parameter translation suppresses parameter name** (2026.2.14): When a CCU parameter translation resolves to an empty string (`""`), the parameter name is now omitted from `translated_name` and `translated_full_name`. This allows translations to explicitly suppress redundant parameter names when the channel name already conveys the meaning. `None` (no translation found) still falls back to the original untranslated name.
+
 ### Bug Fixes (aiohomematic)
 
+- **i18n: Allow multiple CentralUnit instances** (2026.2.15): `set_locale()` is now idempotent — calling it again with the same locale is a no-op. When called with a different locale, it logs a message and keeps the original. Previously, creating a second `CentralUnit` raised `RuntimeError` because `set_locale()` was strictly one-shot.
 - **XML-RPC server race condition on multi-hub startup** (2026.2.7): Fixed a race condition in `AsyncXmlRpcServer.start()` that caused "address in use" errors when multiple central units started concurrently. The singleton server is now protected by an `asyncio.Lock`.
 - **Optimistic rollback now clears unconfirmed value** (2026.2.7): `_rollback_optimistic_value()` now properly clears the unconfirmed value before restoring the previous confirmed value, preventing the unconfirmed value from undermining the rollback.
 - **CallbackDataPoint ownership reset on unsubscribe** (2026.2.6): When the owning `custom_id` fully unsubscribes from a data point, `_custom_id` is now reset to `None`. This allows re-registration with a different `custom_id` (e.g. after an entity_id rename in Home Assistant), preventing `AioHomematicException` on resubscription.
