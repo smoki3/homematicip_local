@@ -1782,18 +1782,28 @@ let Ee = class extends oe {
   }
 };
 function Ie(e, t) {
-  return new Promise((i) => {
-    const s = new CustomEvent("hass-dialog", {
-      bubbles: !0,
-      composed: !0,
-      detail: {
-        dialogTag: "ha-confirmation-dialog",
-        dialogImport: () => Promise.resolve(),
-        dialogParams: { ...t, confirm: () => i(!0), cancel: () => i(!1) },
-      },
+  if (customElements.get("dialog-box")) {
+    return new Promise((i) => {
+      const s = new CustomEvent("show-dialog", {
+        bubbles: !0,
+        composed: !0,
+        detail: {
+          dialogTag: "dialog-box",
+          dialogImport: () => Promise.resolve(),
+          dialogParams: {
+            ...t,
+            confirmation: !0,
+            confirm: () => i(!0),
+            cancel: () => i(!1),
+          },
+        },
+      });
+      e.dispatchEvent(s);
     });
-    e.dispatchEvent(s);
-  });
+  }
+  return Promise.resolve(
+    window.confirm((t.title || "") + "\n\n" + (t.text || "")),
+  );
 }
 function Pe(e, t) {
   const i = new CustomEvent("hass-notification", {
