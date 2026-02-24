@@ -13,7 +13,9 @@
   - `set_simple_schedule` → `set_schedule`
   - `set_simple_schedule_profile` → `set_schedule_profile`
   - `set_simple_schedule_weekday` → `set_schedule_weekday`
-  - `set_schedule_active_profile` → `set_current_schedule_profile`
+
+- **Removed services:**
+  - `set_schedule_active_profile` / `set_current_schedule_profile` — use `set_current_schedule_profile` via the configuration panel or update the profile through the `set_schedule_profile` service instead
 
 - **Renamed entity attributes (Climate & Week Profile Sensor):**
   - `active_profile` → `current_schedule_profile`
@@ -77,6 +79,10 @@
 - **`config_entry_id` attribute**: Climate and week profile sensor entities with schedule support now expose a `config_entry_id` state attribute, enabling automations and frontend cards to identify the associated config entry.
 
 ### Changed
+
+- **Schedule WebSocket commands opened to non-admin users**: Removed `@require_admin` restriction from `get_climate_schedule`, `set_climate_active_profile`, and `get_device_schedule` WebSocket commands, allowing non-admin users to read and interact with schedule data.
+
+- **Admin-only restriction for writing Services**: The services `put_link_paramset`, `set_schedule`, `set_schedule_profile`, `copy_schedule`, and `copy_schedule_profile` now require admin privileges (`async_register_admin_service`). Read-only schedule services remain accessible to all users.
 
 - **Entity names from backend translations**: Removed redundant local entity translations (binary_sensor, button, lock, number, select, sensor, switch, valve) from strings.json and translation files. Entity names are now provided by the backend CCU translation system via `translated_name`. Only climate (preset modes) and event (keypress types) translations remain local.
 

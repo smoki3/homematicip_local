@@ -212,16 +212,6 @@ SCHEMA_COPY_SCHEDULE_PROFILE = vol.All(
     ),
 )
 
-SCHEMA_SET_CURRENT_SCHEDULE_PROFILE = vol.All(
-    cv.has_at_least_one_key(CONF_DEVICE_ID, CONF_DEVICE_ADDRESS),
-    cv.has_at_most_one_key(CONF_DEVICE_ID, CONF_DEVICE_ADDRESS),
-    BASE_SCHEMA_DEVICE.extend(
-        {
-            vol.Required(ATTR_PROFILE): cv.string,
-        }
-    ),
-)
-
 SCHEMA_ADD_LINK = vol.All(
     {
         vol.Required(CONF_RECEIVER_CHANNEL_ADDRESS): validate_channel_address,
@@ -452,7 +442,6 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         HmipLocalServices.REMOVE_LINK: _async_service_remove_link,
         HmipLocalServices.SET_DEVICE_VALUE: _async_service_set_device_value,
         HmipLocalServices.SET_SCHEDULE: _async_service_set_schedule,
-        HmipLocalServices.SET_CURRENT_SCHEDULE_PROFILE: _async_service_set_current_schedule_profile,
         HmipLocalServices.SET_SCHEDULE_PROFILE: _async_service_set_schedule_profile,
         HmipLocalServices.SET_SCHEDULE_WEEKDAY: _async_service_set_schedule_weekday,
         HmipLocalServices.SET_VARIABLE_VALUE: _async_service_set_variable_value,
@@ -625,7 +614,8 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         schema=SCHEMA_SET_DEVICE_VALUE,
     )
 
-    hass.services.async_register(
+    async_register_admin_service(
+        hass=hass,
         domain=DOMAIN,
         service=HmipLocalServices.PUT_LINK_PARAMSET,
         service_func=async_call_hmip_local_service,
@@ -692,7 +682,8 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         supports_response=SupportsResponse.OPTIONAL,
     )
 
-    hass.services.async_register(
+    async_register_admin_service(
+        hass=hass,
         domain=DOMAIN,
         service=HmipLocalServices.SET_SCHEDULE,
         service_func=async_call_hmip_local_service,
@@ -715,7 +706,8 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         supports_response=SupportsResponse.OPTIONAL,
     )
 
-    hass.services.async_register(
+    async_register_admin_service(
+        hass=hass,
         domain=DOMAIN,
         service=HmipLocalServices.SET_SCHEDULE_PROFILE,
         service_func=async_call_hmip_local_service,
@@ -729,25 +721,20 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         schema=SCHEMA_SET_SCHEDULE_WEEKDAY,
     )
 
-    hass.services.async_register(
+    async_register_admin_service(
+        hass=hass,
         domain=DOMAIN,
         service=HmipLocalServices.COPY_SCHEDULE,
         service_func=async_call_hmip_local_service,
         schema=SCHEMA_COPY_SCHEDULE,
     )
 
-    hass.services.async_register(
+    async_register_admin_service(
+        hass=hass,
         domain=DOMAIN,
         service=HmipLocalServices.COPY_SCHEDULE_PROFILE,
         service_func=async_call_hmip_local_service,
         schema=SCHEMA_COPY_SCHEDULE_PROFILE,
-    )
-
-    hass.services.async_register(
-        domain=DOMAIN,
-        service=HmipLocalServices.SET_CURRENT_SCHEDULE_PROFILE,
-        service_func=async_call_hmip_local_service,
-        schema=SCHEMA_SET_CURRENT_SCHEDULE_PROFILE,
     )
 
     async_register_platform_entity_service(
@@ -1422,16 +1409,6 @@ async def _async_service_set_schedule(*, hass: HomeAssistant, service: ServiceCa
     except ValidationError as vexc:
         errors = "; ".join(e["msg"] for e in vexc.errors())
         raise HomeAssistantError(f"Invalid schedule data: {errors}") from vexc
-
-
-async def _async_service_set_current_schedule_profile(*, hass: HomeAssistant, service: ServiceCall) -> None:
-    """Handle set_current_schedule_profile service call."""
-    hm_device = _async_get_hm_device_by_service_data(hass=hass, service=service)
-    wp_dp = hm_device.week_profile_data_point
-    if not isinstance(wp_dp, ClimateWeekProfileDataPointProtocol):
-        raise HomeAssistantError(f"Device {hm_device.name} does not support climate schedules")
-    profile = ScheduleProfile(service.data[ATTR_PROFILE])
-    wp_dp.set_current_schedule_profile(profile=profile)
 
 
 async def _async_service_get_schedule_profile(*, hass: HomeAssistant, service: ServiceCall) -> ServiceResponse:
