@@ -17,6 +17,7 @@ from aiohomematic.interfaces import (
     GenericSysvarDataPointProtocol,
 )
 from aiohomematic.type_aliases import UnsubscribeCallback
+from homeassistant.const import ATTR_CONFIG_ENTRY_ID
 from homeassistant.core import State, callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -55,6 +56,7 @@ class AioHomematicGenericEntity(Entity, Generic[HmGenericDataPointProtocol]):
 
     NO_RECORDED_ATTRIBUTES = {
         ATTR_ADDRESS,
+        ATTR_CONFIG_ENTRY_ID,
         ATTR_FUNCTION,
         ATTR_INTERFACE_ID,
         ATTR_MODEL,
@@ -103,6 +105,14 @@ class AioHomematicGenericEntity(Entity, Generic[HmGenericDataPointProtocol]):
         )
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, identifier)},
+            configuration_url=(
+                f"homeassistant://homematic-config#view=device-detail"
+                f"&entry={control_unit.entry_id}"
+                f"&device={hm_device.address}"
+                f"&interface={hm_device.interface_id}"
+            )
+            if control_unit.enable_config_panel
+            else None,
             manufacturer=hm_device.manufacturer,
             model=hm_device.model,
             model_id=hm_device.model_description,
