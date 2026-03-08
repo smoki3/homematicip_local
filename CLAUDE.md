@@ -1026,6 +1026,16 @@ Config entry migrations (`async_migrate_entry` in `__init__.py`) are **only need
 
 ## Tips for AI Assistants
 
+### Interaction Protocol
+
+These rules govern how the AI assistant communicates and works with the developer:
+
+1. **Describe before coding**: Before writing any code, describe the planned approach and wait for explicit approval.
+2. **Clarify ambiguities first**: If requirements are ambiguous or incomplete, ask clarifying questions before writing any code.
+3. **Suggest edge cases after coding**: After finishing any code change, list edge cases and suggest test cases to cover them.
+4. **Bug fix = test first**: When fixing a bug, start by writing a test that reproduces it, then fix the code until the test passes.
+5. **Learn from corrections**: When corrected, reflect on what went wrong and describe a concrete plan to avoid repeating the mistake.
+
 ### Do's
 
 ✅ **Always** include `from __future__ import annotations` at the top of Python files
@@ -1041,6 +1051,8 @@ Config entry migrations (`async_migrate_entry` in `__init__.py`) are **only need
 ✅ **Always** update changelog.md with breaking changes
 ✅ **Always** create implementation plans that are Haiku-executable
 ✅ **Always** verify docs/*.md files are current after major changes
+✅ **Always** describe your approach and wait for approval before writing code
+✅ **Always** ask clarifying questions when requirements are ambiguous
 
 ### Don'ts
 
@@ -1054,6 +1066,8 @@ Config entry migrations (`async_migrate_entry` in `__init__.py`) are **only need
 ❌ **Never** create plans with ambiguities or "TBD" items
 ❌ **Never** poll for state updates (use push-based updates)
 ❌ **Never** create entities that poll (`_attr_should_poll = False`)
+❌ **Never** start coding without describing the approach first
+❌ **Never** assume ambiguous requirements — ask instead
 
 ### Common Pitfalls to Avoid
 
