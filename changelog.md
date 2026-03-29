@@ -8,6 +8,7 @@
 - **Device name from events**: Event handlers (`_on_device_trigger`, `_on_optimistic_rollback`, `_fire_device_availability_event`) now use `event.device_name` from aiohomematic, falling back to HA device registry only for user-overridden names
 - **DataPointType-based platform routing**: `get_new_data_points()` uses `DataPointType` enum instead of concrete class types, decoupling platform setup from aiohomematic model internals
 - **State transition handlers**: RUNNING and RECOVERING central states handled via `on_state_transition()` callbacks; DEGRADED/FAILED remain on `SystemStatusChangedEvent` for access to failure details
+- **Exclude message attributes from recorder**: `AioHomematicSysvarSensor` excludes `alarm_1`..`alarm_99` and `message_1`..`message_199` attributes from recorder to prevent database bloat
 
 ### Config Panel
 
@@ -33,8 +34,13 @@
 
 ### Dependencies
 
-#### Bump aiohomematic to [2026.3.19](https://github.com/SukramJ/aiohomematic/compare/2026.3.8...2026.3.19)
+#### Bump aiohomematic to [2026.3.20](https://github.com/SukramJ/aiohomematic/compare/2026.3.8...2026.3.20)
 
+- **Message enrichment**: `ServiceMessageData` and `AlarmMessageData` include pre-resolved fields (`message_code`, `display_name`, `msg_type_name`) with i18n support (en/de)
+- **Individual message attributes**: Message sensors expose each message as individual extra state attribute (`alarm_1`, `message_1`, ...) with human-readable display names
+- **ServiceMessageType enum extended**: Added `ALARM`, `UPDATE_PENDING`, and `COMMUNICATION` types
+- **DST-safe health checks**: Replaced `datetime.now()` with `time.monotonic()` for callback alive and connection checks, preventing false timeouts during DST transitions
+- **Alarm messages fix**: Fixed ReGa script not returning active alarm messages for system alarms with sentinel trigger data points
 - **Service messages hub sensor**: New sensor exposing active CCU service messages — count as state, full message details as attribute
 - **Alarm messages hub sensor**: New sensor exposing active CCU alarm messages (Alarmmeldungen) — count as state, full message details as attribute
 - **Acknowledge messages**: Support for acknowledging service and alarm messages via ReGa scripts
