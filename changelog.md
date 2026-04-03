@@ -1,4 +1,4 @@
-# Version [2.5.0](https://github.com/SukramJ/homematicip_local/compare/2.4.1...2.5.0) (2026-03-30)
+# Version [2.5.2](https://github.com/SukramJ/homematicip_local/compare/2.4.1...2.5.2) (2026-03-30)
 
 ## What's Changed
 
