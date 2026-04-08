@@ -241,9 +241,7 @@ function e(e,t,s,i){var r,a=arguments.length,n=a<3?t:null===i?i=Object.getOwnPro
           ${this._renderStats()} ${this._renderRadioLevels()} ${this._renderIncidents()}
         </div>
       </ha-card>
-    `}_renderStatusBadge(){if(!this._health)return K;const e=this._health.central_state,t="running"===e?.toLowerCase(),s=Math.round(100*this._health.overall_health_score);return B`
-      <span class="badge ${t?"ok":"error"}">${s}%</span>
-    `}_renderStats(){if(!this._deviceStats)return K;const e=this._deviceStats;return B`
+    `}_renderStatusBadge(){if(!this._health)return K;const e=this._health.central_state,t="running"===e?.toLowerCase(),s=Math.round(100*this._health.overall_health_score);return B` <span class="badge ${t?"ok":"error"}">${s}%</span> `}_renderStats(){if(!this._deviceStats)return K;const e=this._deviceStats;return B`
       <div class="stat-grid">
         <div class="stat-item">
           <div class="stat-value">${e.total_devices}</div>
@@ -267,9 +265,7 @@ function e(e,t,s,i){var r,a=arguments.length,n=a<3?t:null===i?i=Object.getOwnPro
               <div class="item-content">
                 <div class="item-primary">${e.name}</div>
                 <div class="item-secondary">
-                  ${null!==e.dutyCycle?B`<span class="${this._dcClass(e.dutyCycle)}"
-                        >DC: ${e.dutyCycle}%</span
-                      >`:K}
+                  ${null!==e.dutyCycle?B`<span class="${this._dcClass(e.dutyCycle)}">DC: ${e.dutyCycle}%</span>`:K}
                   ${null!==e.dutyCycle&&null!==e.carrierSense?" · ":K}
                   ${null!==e.carrierSense?B`<span class="${this._csClass(e.carrierSense)}"
                         >CS: ${e.carrierSense}%</span
@@ -287,13 +283,14 @@ function e(e,t,s,i){var r,a=arguments.length,n=a<3?t:null===i?i=Object.getOwnPro
       <div class="item-list">
         ${this._incidents.incidents.map(e=>B`
             <div class="item-row ${this._incidentSeverity(e)}">
-              <ha-icon
-                class="item-icon"
-                .icon=${this._incidentIcon(e)}
-              ></ha-icon>
+              <ha-icon class="item-icon" .icon=${this._incidentIcon(e)}></ha-icon>
               <div class="item-content">
-                <div class="item-primary">${e.message||e.type}</div>
-                <div class="item-secondary">${this._formatTimestamp(e.timestamp)}</div>
+                <div class="item-primary">
+                  ${e.message||e.type}
+                </div>
+                <div class="item-secondary">
+                  ${this._formatTimestamp(e.timestamp)}
+                </div>
               </div>
             </div>
           `)}

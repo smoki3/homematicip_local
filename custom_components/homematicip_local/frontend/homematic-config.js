@@ -2004,9 +2004,7 @@ function e(e,t,i,s){var a,n=arguments.length,r=n<3?t:null===s?s=Object.getOwnPro
                               ${e.channel_name&&e.channel_name!==e.channel_type_label?e.channel_name:`${e.channel_type_label} :${i}`}
                               — ${e.device_name}
                             </div>
-                            <div class="radio-subtitle">
-                              ${e.device_model} · ${e.address}
-                            </div>
+                            <div class="radio-subtitle">${e.device_model} · ${e.address}</div>
                           </div>
                         </div>
                       `})}
