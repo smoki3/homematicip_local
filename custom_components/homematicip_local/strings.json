@@ -648,6 +648,7 @@
                     "advanced_settings": "Advanced settings", 
                     "connection": "Connection settings", 
                     "interfaces": "TLS & interfaces", 
+                    "permissions": "Schedule editing", 
                     "programs_sysvars": "Programs & system variables"
                 }, 
                 "title": "Configure integration"
@@ -690,6 +691,15 @@
                 }, 
                 "description": "Configure interface ports (TLS is {tls_status})", 
                 "title": "Port configuration"
+            }, 
+            "permissions": {
+                "data": {
+                    "non_admin_permissions": "Allow non-admin users to edit schedules"
+                }, 
+                "data_description": {
+                    "non_admin_permissions": "When enabled, non-admin users can edit device schedules via the schedule cards. Admin users always have full access."
+                }, 
+                "title": "Schedule editing"
             }, 
             "programs_sysvars": {
                 "data": {

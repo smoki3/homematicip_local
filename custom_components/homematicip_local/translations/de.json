@@ -648,6 +648,7 @@
                     "advanced_settings": "Erweiterte Einstellungen", 
                     "connection": "Verbindungseinstellungen", 
                     "interfaces": "Schnittstellenkonfiguration", 
+                    "permissions": "Zeitplan-Bearbeitung", 
                     "programs_sysvars": "Programme & Systemvariablen"
                 }, 
                 "title": "Integration konfigurieren"
@@ -690,6 +691,15 @@
                 }, 
                 "description": "Schnittstellen-Ports konfigurieren (TLS ist {tls_status})", 
                 "title": "Port-Konfiguration"
+            }, 
+            "permissions": {
+                "data": {
+                    "non_admin_permissions": "Nicht-Admin-Benutzern erlauben, Zeitpläne zu bearbeiten"
+                }, 
+                "data_description": {
+                    "non_admin_permissions": "Wenn aktiviert, können Nicht-Admin-Benutzer Gerätezeitpläne über die Zeitplan-Karten bearbeiten. Admin-Benutzer haben immer vollen Zugriff."
+                }, 
+                "title": "Zeitplan-Bearbeitung"
             }, 
             "programs_sysvars": {
                 "data": {

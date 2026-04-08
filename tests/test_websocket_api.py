@@ -113,12 +113,14 @@ def mock_facade() -> Mock:
                 channels=(
                     ConfigurableDeviceChannel(
                         address="VCU0000001:0",
+                        channel_name="Test Switch:0",
                         channel_type="MAINTENANCE",
                         channel_type_label="Maintenance",
                         paramset_keys=("MASTER",),
                     ),
                     ConfigurableDeviceChannel(
                         address="VCU0000001:1",
+                        channel_name="Test Switch:1",
                         channel_type="SWITCH",
                         channel_type_label="Switch",
                         paramset_keys=("MASTER", "VALUES"),
@@ -247,6 +249,7 @@ class TestWsListDevices:
                     channels=(
                         ConfigurableDeviceChannel(
                             address="VCU0000001:1",
+                            channel_name="Test Switch:1",
                             channel_type="SWITCH",
                             channel_type_label="Switch",
                             paramset_keys=("MASTER",),
@@ -2026,6 +2029,7 @@ class TestWsDirectLinks:
             return_value=(
                 LinkableChannel(
                     address="VCU0000002:1",
+                    channel_name="Wall Switch:1",
                     channel_type="KEY",
                     channel_type_label="Key",
                     device_address="VCU0000002",
@@ -2067,6 +2071,7 @@ class TestWsDirectLinks:
             return_value=(
                 LinkableChannel(
                     address="VCU0000002:1",
+                    channel_name="Switch 2:1",
                     channel_type="SWITCH",
                     channel_type_label="Switch",
                     device_address="VCU0000002",
@@ -2109,7 +2114,9 @@ class TestWsDirectLinks:
             return_value=(
                 DeviceLink(
                     sender_address="VCU0000001:1",
+                    sender_channel_name="Test Switch:1",
                     receiver_address="VCU0000002:1",
+                    receiver_channel_name="Peer Switch:1",
                     name="Test Link",
                     description="test",
                     flags=0,
@@ -2170,7 +2177,9 @@ class TestWsDirectLinks:
             return_value=(
                 DeviceLink(
                     sender_address="VCU0000001:1",
+                    sender_channel_name="Test Switch:1",
                     receiver_address="VCU0000002:1",
+                    receiver_channel_name="Peer:1",
                     name="Link",
                     description="",
                     flags=0,
@@ -2266,7 +2275,9 @@ class TestWsDirectLinks:
             return_value=(
                 DeviceLink(
                     sender_address="VCU0000002:1",
+                    sender_channel_name="Remote:1",
                     receiver_address="VCU0000001:1",
+                    receiver_channel_name="Test Switch:1",
                     name="Incoming Link",
                     description="",
                     flags=0,
