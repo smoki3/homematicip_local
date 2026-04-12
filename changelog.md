@@ -1,17 +1,28 @@
-# Version [2.6.1](https://github.com/SukramJ/homematicip_local/compare/2.6.0...2.6.1) (2026-04-11)
+# Version [2.6.1](https://github.com/SukramJ/homematicip_local/compare/2.6.0...2.6.1) (2026-04-12)
 
 ## What's Changed
 
+### Integration
+
+- Per-channel schedule enable/disable support for non-climate week profiles (WebSocket endpoint + sensor attribute)
+
 ### Dependencies
 
-#### Bump aiohomematic to [2026.4.8](https://github.com/SukramJ/aiohomematic/compare/2026.4.6...2026.4.8)
+#### Bump aiohomematic to [2026.4.9](https://github.com/SukramJ/aiohomematic/compare/2026.4.6...2026.4.9)
 
+- Per-channel schedule enable/disable via `COMBINED_PARAMETER` (atomic bitmask + mode write)
+- Load `WEEK_PROGRAM_CHANNEL_LOCKS` value at startup (fixes delayed `schedule_enabled` attribute)
 - Fixed missing DURATION_UNIT/DURATION_VALUE in putParamset for turn_on and turn_off (HmIP-BSL, HmIP-RGBW, HmIPW-WRC6, HmIP-DRG-DALI)
 - Fixed RAMP_TIME_TO_OFF usage for RGBW and DRG-DALI lights
 - Fixed siren duration always sent on turn_on
 
+#### Bump aiohomematic-config to [2026.4.2](https://github.com/SukramJ/aiohomematic-config/compare/2026.4.1...2026.4.2)
+
+- Per-channel `schedule_enabled` field on `DeviceScheduleData`
+
 #### Bump homematicip-local-frontend
 
+- Per-channel schedule enable/disable as clickable channel chips
 - Fixed cards showing "Konfigurationsfehler" in Firefox
 - Fixed cards showing infinite loading spinner in HA Card Picker and on dashboards
 - Fixed device icons invisible or poorly visible in dark mode
