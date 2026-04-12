@@ -166,13 +166,14 @@ class AioHomematicGenericEntity(Entity, Generic[HmGenericDataPointProtocol]):
             return hm_device.name
 
         if self._data_point.category in _SCHEDULE_CATEGORIES:
-            return (
+            schedule_name = (
                 ccu_translations.get_parameter_translation(
                     parameter=_SCHEDULE_TRANSLATION_PARAMETER,
                     locale=hm_device.config_provider.config.locale,
                 )
                 or "Schedule"
             )
+            return f"{hm_device.name} {schedule_name}"
 
         if (
             hm_device.has_sub_devices
