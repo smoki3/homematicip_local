@@ -23,6 +23,7 @@ from .generic_entity import (
     AioHomematicGenericProgramEntity,
     AioHomematicGenericRestoreEntity,
     AioHomematicGenericSysvarEntity,
+    get_schedule_name,
 )
 from .support import handle_homematic_errors
 
@@ -212,8 +213,15 @@ class AioHomematicScheduleSwitch(AioHomematicGenericEntity[ScheduleChannelSwitch
     @override
     def name(self) -> str | None:
         """Return the name of the entity."""
-        # Sub-device is "Schedule"/"Zeitplan", entity name is just the channel name
-        return self._data_point.name_data.channel_name or None
+        channel_name = self._data_point.name_data.channel_name
+        if self._cu.enable_sub_devices:
+            # Sub-device is "Schedule"/"Zeitplan", entity name is just the channel name
+            return channel_name or None
+        # Without sub-devices, combine schedule name with channel name
+        schedule_name = get_schedule_name(locale=self._data_point.device.config_provider.config.locale)
+        if channel_name:
+            return f"{schedule_name} {channel_name}"
+        return schedule_name
 
     @override
     @handle_homematic_errors
