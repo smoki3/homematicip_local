@@ -9,6 +9,16 @@
 - Schedule entities (week profile sensor, schedule switch) now consistently use "Zeitplan"/"Schedule" in their name, both with and without sub-devices enabled
 - Fixed schedule sub-device naming: schedule devices now correctly include "Schedule"/"Zeitplan" in their name when sub-devices are enabled
 
+### Blueprints
+
+- Modernized all blueprints: replaced deprecated `service:` with `action:`, simplified condition templates to shorthand syntax
+- Added `homeassistant.min_version: "2026.3.0"` to all blueprints
+- Added multi-device support to all button blueprints (2, 4, 6, 8-button)
+- Added CCU direct-link detection to all button blueprints: optional warning notification and action skip when CCU direct connections exist for the pressed button (based on community contribution by @hosswald)
+- Added configurable delay to all reactivate-device blueprints (default: 10 seconds)
+- Updated all blueprint versions to v2026-04-14
+- Added comprehensive blueprint test suite (171 tests): schema validation, input validation, template substitution, full-flow end-to-end tests including direct-link detection and all button-subtype mappings
+
 ### Dependencies
 
 #### Bump aiohomematic to [2026.4.10](https://github.com/SukramJ/aiohomematic/compare/2026.4.6...2026.4.10)
