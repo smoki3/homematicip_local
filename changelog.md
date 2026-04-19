@@ -1,4 +1,4 @@
-# Version [2.6.1](https://github.com/SukramJ/homematicip_local/compare/2.6.0...2.6.1) (2026-04-12)
+# Version [2.7.0](https://github.com/SukramJ/homematicip_local/compare/2.6.0...2.7.0) (2026-04-19)
 
 ## What's Changed
 
