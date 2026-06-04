@@ -1,3 +1,11 @@
+# Version [2.7.3](https://github.com/SukramJ/homematicip_local/compare/2.7.2...2.7.3) (2026-06-04)
+
+## What's Changed
+
+### Integration
+
+- Fix permanent mass deletion of entity-registry entries after a transient auth error (aiohomematic#3215): the startup orphan cleanup now refuses to run when it would remove more than half of the integration's registry entries — this guards against the central reporting `RUNNING` (clients connected) while the device descriptions failed to load, which previously wiped hundreds of entities and re-detected devices as new
+
 # Version [2.7.2](https://github.com/SukramJ/homematicip_local/compare/2.7.1...2.7.2) (2026-05-29)
 
 ## What's Changed

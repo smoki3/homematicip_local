@@ -472,3 +472,40 @@ async def test_cleanup_orphan_entries_recognizes_all_hub_data_point_sources(
 
     for entry in created:
         assert entity_registry.async_get(entry.entity_id) is not None, f"{entry.entity_id} was unexpectedly removed"
+
+
+async def test_cleanup_orphan_entries_skipped_when_data_load_incomplete(
+    hass: HomeAssistant,
+    mock_config_entry_v2: MockConfigEntry,
+) -> None:
+    """
+    A near-total wipe must be refused (regression for #3215).
+
+    The central can report RUNNING (all clients connected) while the device
+    descriptions failed to load (e.g. transient auth error during a CCU restore).
+    ``get_data_points()`` then returns only the few devices that did load, which
+    would make almost every registry entry look orphaned. Deleting them is
+    permanent and breaks dashboards/automations, so the sweep must bail out.
+    """
+    mock_config_entry_v2.add_to_hass(hass)
+    entry_id = mock_config_entry_v2.entry_id
+
+    entity_registry = er.async_get(hass)
+    created = [
+        entity_registry.async_get_or_create(
+            domain="sensor",
+            platform=HMIP_DOMAIN,
+            unique_id=f"{HMIP_DOMAIN}_dp_{index}",
+            config_entry=mock_config_entry_v2,
+        )
+        for index in range(10)
+    ]
+
+    # Only one of ten data points loaded -> 9/10 would be orphaned (90% > threshold).
+    fake_self = _build_orphan_sweep_self(hass, entry_id, data_point_unique_ids=("dp_0",))
+    ControlUnit._async_cleanup_orphaned_entity_registry_entries(fake_self)
+
+    for entry in created:
+        assert entity_registry.async_get(entry.entity_id) is not None, (
+            f"{entry.entity_id} was deleted despite an incomplete device load"
+        )
