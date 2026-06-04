@@ -146,6 +146,15 @@ _LOGGER = logging.getLogger(__name__)
 # comfortably covers the first scheduler iteration of fetch_system_update_data.
 ORPHAN_CLEANUP_DELAY: Final = 60
 
+# Safety threshold for the orphan entity registry cleanup. The central reports
+# RUNNING as soon as all clients are connected, which does not guarantee that the
+# device descriptions were actually loaded (e.g. a transient auth error during a
+# CCU restore leaves the device cache empty/partial — see aiohomematic#3215). In
+# that situation almost every registry entry looks orphaned. Since deleting entries
+# is permanent and breaks dashboards/automations, the sweep refuses to run when it
+# would remove more than this fraction of the integration's registry entries.
+ORPHAN_CLEANUP_MAX_DELETE_RATIO: Final = 0.5
+
 # Event type for device availability (not in DeviceTriggerEventType as it comes from DeviceLifecycleEvent)
 EVENT_TYPE_DEVICE_AVAILABILITY: Final = "homematic.device_availability"
 # Event type for optimistic rollback (from OptimisticRollbackEvent)
@@ -464,7 +473,11 @@ class ControlUnit(BaseControlUnit):
         backend device removal) remain in the entity registry indefinitely and cannot
         be removed via the UI. This sweep removes them on integration startup.
         Only runs when the central is fully started so that we don't delete entries
-        whose data points just haven't been loaded yet.
+        whose data points just haven't been loaded yet. As an additional safeguard it
+        refuses to run when it would remove more than ``ORPHAN_CLEANUP_MAX_DELETE_RATIO``
+        of the registry entries, which protects against a permanent mass deletion when
+        the device descriptions failed to load despite the central reporting RUNNING
+        (see aiohomematic#3215).
         """
         if self._central.state != CentralState.RUNNING:
             _LOGGER.debug(
@@ -509,11 +522,29 @@ class ControlUnit(BaseControlUnit):
             )
 
         entity_registry = er.async_get(self._hass)
-        orphaned_entries: list[er.RegistryEntry] = [
+        platform_entries: list[er.RegistryEntry] = [
             entry
             for entry in er.async_entries_for_config_entry(entity_registry, self._entry_id)
-            if entry.platform == DOMAIN and entry.unique_id not in current_unique_ids
+            if entry.platform == DOMAIN
         ]
+        orphaned_entries: list[er.RegistryEntry] = [
+            entry for entry in platform_entries if entry.unique_id not in current_unique_ids
+        ]
+
+        # Refuse implausibly large sweeps: a near-total wipe almost always means the
+        # central is RUNNING (clients connected) while the device descriptions failed
+        # to load, not that the user actually removed those devices (#3215). Deleting
+        # the entries is permanent, so skip and let a later sweep clean up once the
+        # device data is fully loaded.
+        if platform_entries and len(orphaned_entries) > len(platform_entries) * ORPHAN_CLEANUP_MAX_DELETE_RATIO:
+            _LOGGER.warning(
+                "Skipping orphan entity registry cleanup: %s of %s entries look orphaned, "
+                "which exceeds the safety threshold (likely an incomplete device load)",
+                len(orphaned_entries),
+                len(platform_entries),
+            )
+            return
+
         for entry in orphaned_entries:
             _LOGGER.info(
                 "Removing orphan entity registry entry %s (unique_id=%s, disabled=%s)",
