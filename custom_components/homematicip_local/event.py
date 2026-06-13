@@ -57,9 +57,14 @@ async def async_setup_entry(
     )
 
     for event_type in DATA_POINT_EVENTS:
-        async_add_event(
-            event_groups=control_unit.central.query_facade.get_event_groups(event_type=event_type, registered=False)
-        )
+        try:
+            event_groups = control_unit.central.query_facade.get_event_groups(event_type=event_type, registered=False)
+        except NotImplementedError as nie:
+            # The loom backend does not model per-device event groups yet; set up
+            # the platform without bootstrap entities instead of failing the entry.
+            _LOGGER.debug("ASYNC_SETUP_ENTRY: Event groups unavailable for %s: %s", event_type, nie)
+            continue
+        async_add_event(event_groups=event_groups)
 
 
 class AioHomematicEvent(EventEntity):
@@ -90,8 +95,13 @@ class AioHomematicEvent(EventEntity):
             self._attr_device_class = description.device_class
 
         self._attr_unique_id = f"{DOMAIN}_{event_group.unique_id}"
+        # Carry the room: HA applies suggested_area only when the device
+        # entry is first created — if this event entity happens to be the
+        # device's first, a bare DeviceInfo would pin the device area-less
+        # forever (suggested_area is runtime-only and never re-applied).
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, event_group.device.identifier)},
+            suggested_area=event_group.device.room,
         )
         self._attr_extra_state_attributes = {
             EVENT_INTERFACE_ID: event_group.device.interface_id,
