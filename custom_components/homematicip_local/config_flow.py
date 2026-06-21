@@ -1570,8 +1570,16 @@ class DomainConfigFlow(ConfigFlow, domain=DOMAIN):
     async def _async_create_loom_entry(self, ccu: dict[str, Any]) -> ConfigFlowResult:
         """Create the config entry for the chosen CCU on a discovered daemon."""
         disc = self._loom_discovery
-        await self.async_set_unique_id(ccu["serial"])
-        self._abort_if_unique_id_configured()
+        serial = ccu["serial"]
+        # A concurrent CCU discovery (e.g. SSDP) may hold an in-progress flow
+        # with this serial; we have already committed to the loom backend here,
+        # so do not abort our own flow. Creating the entry below auto-aborts the
+        # now-redundant discovery card.
+        await self.async_set_unique_id(serial, raise_on_progress=False)
+        self._abort_if_unique_id_configured(
+            error="already_configured",
+            description_placeholders={"serial": serial or "unknown"},
+        )
         data: ConfigType = {
             CONF_BACKEND: BACKEND_LOOM,
             CONF_INSTANCE_NAME: ccu["name"],

@@ -3455,6 +3455,21 @@ _LOOM_LIST = "custom_components.homematicip_local.config_flow._async_loom_list_c
 class TestLoomZeroconfDiscovery:
     """mDNS (zeroconf) discovery of an openccu-loom daemon."""
 
+    async def test_already_configured_aborts_with_serial(self, hass: HomeAssistant) -> None:
+        """A CCU whose serial is already configured aborts and renders the serial placeholder."""
+        existing = MockConfigEntry(domain=HMIP_DOMAIN, unique_id="ABC123", data={CONF_HOST: "ccu.local"})
+        existing.add_to_hass(hass)
+        ccus = [{"name": "Home", "serial": "ABC123", "host": "ccu.local", "model": "CCU3", "available": True}]
+        with (
+            patch(_LOOM_ENABLED, True),
+            patch(_LOOM_LIST, return_value=ccus),
+        ):
+            init = await self._init_zeroconf(hass, _loom_zeroconf_info())
+            result = await hass.config_entries.flow.async_configure(init["flow_id"], {CONF_LOOM_TOKEN: "tok"})
+        assert result["type"] == FlowResultType.ABORT
+        assert result["reason"] == "already_configured"
+        assert result["description_placeholders"] == {"serial": "ABC123"}
+
     async def test_cannot_connect(self, hass: HomeAssistant) -> None:
         with (
             patch(_LOOM_ENABLED, True),
@@ -3530,6 +3545,36 @@ class TestLoomZeroconfDiscovery:
             result = await hass.config_entries.flow.async_configure(init["flow_id"], {CONF_LOOM_TOKEN: "x"})
         assert result["type"] == FlowResultType.FORM
         assert result["errors"] == {"base": "no_ccus"}
+
+    async def test_parallel_ssdp_discovery_does_not_block_loom(
+        self, hass: HomeAssistant, discovery_info: ssdp.SsdpServiceInfo
+    ) -> None:
+        """A concurrent SSDP discovery of the same CCU must not abort the loom setup as already_in_progress."""
+        ssdp_flow = await hass.config_entries.flow.async_init(
+            HMIP_DOMAIN, data=discovery_info, context={"source": config_entries.SOURCE_SSDP}
+        )
+        assert ssdp_flow["type"] == FlowResultType.FORM
+        ccus = [
+            {
+                "name": "Home",
+                "serial": const.CONFIG_ENTRY_UNIQUE_ID,
+                "host": "ccu.local",
+                "model": "CCU3",
+                "available": True,
+            }
+        ]
+        with (
+            patch(_LOOM_ENABLED, True),
+            patch(_LOOM_LIST, return_value=ccus),
+            patch("custom_components.homematicip_local.async_setup_entry", return_value=True),
+        ):
+            init = await self._init_zeroconf(hass, _loom_zeroconf_info())
+            done = await hass.config_entries.flow.async_configure(init["flow_id"], {CONF_LOOM_TOKEN: "tok"})
+            await hass.async_block_till_done()
+        assert done["type"] == FlowResultType.CREATE_ENTRY
+        assert done["result"].unique_id == const.CONFIG_ENTRY_UNIQUE_ID
+        # Creating the loom entry auto-aborts the now-redundant SSDP discovery card.
+        assert not hass.config_entries.flow.async_progress()
 
     async def test_shows_token_form(self, hass: HomeAssistant) -> None:
         with patch(_LOOM_ENABLED, True):
