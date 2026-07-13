@@ -4923,7 +4923,7 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
       flex-wrap: wrap;
       gap: 4px;
       font-size: 13px;
-      padding: 4px 0 8px;
+      padding: 4px 16px 8px 16px;
       color: var(--secondary-text-color);
     }
 
@@ -5113,8 +5113,6 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
         `}}static{this.styles=n`
     :host {
       display: block;
-      padding: 16px;
-      max-width: 1200px;
       margin: 0 auto;
       font-family: var(--paper-font-body1_-_font-family, "Roboto", sans-serif);
       color: var(--primary-text-color);
@@ -5123,14 +5121,14 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
 
     .toolbar {
       display: flex;
+      height: var(--header-height);
       align-items: center;
-      height: 48px;
-      margin: -16px -16px 16px -16px;
-      padding: 0 4px;
       background-color: var(--app-header-background-color, var(--primary-color));
       color: var(--app-header-text-color, var(--text-primary-color, #fff));
       font-size: 20px;
       --ha-icon-button-color: var(--app-header-text-color, var(--text-primary-color, #fff));
+      border-bottom: var(--app-header-border-bottom);
+      box-sizing: border-box;
     }
 
     .main-title {
@@ -5139,6 +5137,7 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      padding-inline-start: var(--ha-space-6);
     }
 
     .entry-selector {
@@ -5149,12 +5148,8 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
       width: 100%;
     }
 
-    .tab-bar {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-      border-bottom: 2px solid var(--divider-color);
-      padding-bottom: 0;
+    .entry-selector ha-select {
+      width: 100%;
     }
 
     .tab {
@@ -5195,6 +5190,7 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
 
     .view-content {
       animation: fadeIn 0.2s ease-out;
+      padding: 16px;
     }
 
     @media (max-width: 600px) {
