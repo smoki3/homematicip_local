@@ -5148,8 +5148,12 @@ function e(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPro
       width: 100%;
     }
 
-    .entry-selector ha-select {
-      width: 100%;
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--divider-color);
+      padding-bottom: 0;
     }
 
     .tab {
