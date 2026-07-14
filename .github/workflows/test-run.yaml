@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   test:
-    if: github.repository_owner == 'SukramJ'
+    if: github.repository_owner == 'smoki3'
     runs-on: ubuntu-latest
     strategy:
       matrix:
