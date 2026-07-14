@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release:
-    if: github.repository_owner == 'SukramJ'
+    if: github.repository_owner == 'smoki3'
     name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
